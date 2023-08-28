@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>algorithm-17： 电话号码的字母组合 (解法)-中等 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">algorithm-17： 电话号码的字母组合 (解法)-中等</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: August 2, 2023&nbsp;&nbsp;13:45:26
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h2 id="题目描述：给定一个仅包含数字-2-9-的字符串，返回所有它能表示的字母组合。答案可以按-任意顺序-返回。给出数字到字母的映射如下（与电话按键相同）。注意-1-不对应任何字母。。"><a href="#题目描述：给定一个仅包含数字-2-9-的字符串，返回所有它能表示的字母组合。答案可以按-任意顺序-返回。给出数字到字母的映射如下（与电话按键相同）。注意-1-不对应任何字母。。" class="headerlink" title="题目描述：给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。。"></a>题目描述：给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。。</h2><p><img src="https://upload-images.jianshu.io/upload_images/11846892-f152c0ed4ca42b37.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="200px-telephone-keypad2svg.png"></p>
+<p><strong>示例1:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：digits = &quot;23&quot;</span><br><span class="line">输出：[&quot;ad&quot;,&quot;ae&quot;,&quot;af&quot;,&quot;bd&quot;,&quot;be&quot;,&quot;bf&quot;,&quot;cd&quot;,&quot;ce&quot;,&quot;cf&quot;]</span><br></pre></td></tr></table></figure>
+<p><strong>示例2:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：digits = &quot;&quot;</span><br><span class="line">输出：[]</span><br></pre></td></tr></table></figure>
+<p><strong>示例3:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：digits = &quot;2&quot;</span><br><span class="line">输出：[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]</span><br></pre></td></tr></table></figure></p>
+<h2 id="题解方法一：回溯"><a href="#题解方法一：回溯" class="headerlink" title="题解方法一：回溯"></a>题解方法一：回溯</h2><p><strong><code>解题思路</code></strong></p>
+<ul>
+<li>定义函数 backtrack(combination, nextdigit)，当 nextdigit 非空时，对于 nextdigit[0] 中的每一个字母 letter，执行回溯 backtrack(combination + letter,nextdigit.sclice(1))，直至 nextdigit 为空。最后将 combination 加入到结果中。</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-70b98cc9c29015d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-08-02 下午2.50.39.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-a8c2a700156feb16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-08-02 下午2.52.20.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-f3904b2d6afda00b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-08-02 下午2.53.38.png"></p>
+<p><strong>代码实现如下：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">var letterCombinations = function(digits) &#123;</span><br><span class="line">    if (!digits) return [];</span><br><span class="line"></span><br><span class="line">  const phone = &#123;</span><br><span class="line">    &quot;2&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;],</span><br><span class="line">    &quot;3&quot;: [&quot;d&quot;, &quot;e&quot;, &quot;f&quot;],</span><br><span class="line">    &quot;4&quot;: [&quot;g&quot;, &quot;h&quot;, &quot;i&quot;],</span><br><span class="line">    &quot;5&quot;: [&quot;j&quot;, &quot;k&quot;, &quot;l&quot;],</span><br><span class="line">    &quot;6&quot;: [&quot;m&quot;, &quot;n&quot;, &quot;o&quot;],</span><br><span class="line">    &quot;7&quot;: [&quot;p&quot;, &quot;q&quot;, &quot;r&quot;, &quot;s&quot;],</span><br><span class="line">    &quot;8&quot;: [&quot;t&quot;, &quot;u&quot;, &quot;v&quot;],</span><br><span class="line">    &quot;9&quot;: [&quot;w&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;],</span><br><span class="line">  &#125;;</span><br><span class="line">  let res = []</span><br><span class="line">  var backtrack = (combination, nextDigit) =&gt; &#123;</span><br><span class="line">    if(nextDigit.length === 0) &#123;</span><br><span class="line">        res.push(combination)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        phone[nextDigit[0]].forEach((letter) =&gt; &#123;</span><br><span class="line">            backtrack(combination + letter, nextDigit.slice(1));</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  backtrack(&quot;&quot;, digits);</span><br><span class="line">  return res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="题解方法二：队列"><a href="#题解方法二：队列" class="headerlink" title="题解方法二：队列"></a>题解方法二：队列</h2><p><strong><code>解题思路</code></strong></p>
+<ul>
+<li>先将输入的 digits 中第一个数字对应的每一个字母入队，然后将出队的元素与第二个数字对应的每一个字母组合后入队…直到遍历到 digits 的结尾。最后队列中的元素就是所求结果。</li>
+</ul>
+<p><strong>代码实现如下：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var letterCombinations = function(digits) &#123;</span><br><span class="line">  if (!digits) return [];</span><br><span class="line">  const phone = [&apos;abc&apos;, &apos;def&apos;, &apos;ghi&apos;, &apos;jkl&apos;, &apos;mno&apos;, &apos;pqrs&apos;, &apos;tuv&apos;, &apos;wxyz&apos;];</span><br><span class="line">  let queue = [&apos;&apos;];</span><br><span class="line">  let n = digits.length</span><br><span class="line">  for(let i = 0; i &lt; n; i++)&#123;</span><br><span class="line">    const digit = digits[i];</span><br><span class="line">    const letters = phone[Number(digit) - 2];</span><br><span class="line">    const queueLength = queue.length;</span><br><span class="line">    for (let j = 0; j &lt; queueLength; j++) &#123; // 数组里的每一项便利 + letters 中的每一项</span><br><span class="line">      const tmp = queue.shift();</span><br><span class="line">      for (let k = 0; k &lt; letters.length; k++) &#123;</span><br><span class="line">        queue.push(tmp + letters[k]);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return queue</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://leetcode.cn/problems/letter-combinations-of-a-phone-number/" target="_blank" rel="noopener">leeCode-17： 电话号码的字母组合-中等</a><br><strong><code>JS知识扩展知识扩展String.prototype.slice():</code></strong> 提取某个字符串的一部分，并返回一个新的字符串，且不会改动原字符串。 返回开始索引（包含）到结束索引（不包含）之间的一个子集。</li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/算法/"># 算法</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/02/algorithm-16/">leeCode-16： 最接近的三数之和 (排序 + 双指针解法)-中等</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/02/algorithm-12/">leeCode-12：整数转罗马数字(模拟 + 硬编码解法)-简单</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

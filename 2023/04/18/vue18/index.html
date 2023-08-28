@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>结构化组件和嵌套组件 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">结构化组件和嵌套组件</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 18, 2023&nbsp;&nbsp;10:23:38
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h3 id="结构化组件"><a href="#结构化组件" class="headerlink" title="结构化组件"></a>结构化组件</h3><p>在Vue中，结构化组件（Functional Component）是一种特殊的组件类型，它是一种<code>无状态</code>的、<code>无实例</code>的组件，用于<code>提高渲染性能</code>和<code>减少内存占用</code>。结构化组件不依赖于组件实例的状态和生命周期，只接收配置数据，随后返回渲染结果。</p>
+<p><strong>结构化组件有以下特点：</strong></p>
+<p>1、不需要标准的组件选项，例如<code>data</code>、<code>methods</code>、<code>watch</code>等。</p>
+<p>2、函数式声明组件，只包含一个函数，接收一个参数<code>props</code>作为配置数据，返回一个虚拟节点（Vnode）作为渲染结果。</p>
+<p>3、内部没有<code>状态</code>和<code>实例</code>，通过<code>render函数</code>直接生成<code>Vnode节点</code>进行渲染，节省了组件实例创建和销毁的开销。</p>
+<p><strong>结构化组件可以通过Vue.extend方法来创建:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const MyFunctionalComponent = Vue.extend(&#123;</span><br><span class="line">  functional: true,</span><br><span class="line">  render(h, context) &#123;</span><br><span class="line">    const &#123; props &#125; = context;</span><br><span class="line">    // 使用 props 渲染组件</span><br><span class="line">    return h(&apos;div&apos;, props.text);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>在上面的代码中，我们使用<code>Vue.extend</code>方法创建了一个结构化组件<code>MyFunctionalComponent</code>，并使用<code>functional: true</code>选项来声明它是一个结构化组件。</p>
+<p>该组件的<code>render函数</code>接收了两个参数:</p>
+<ul>
+<li><code>h函数</code>: 用于创建Vnode节点.</li>
+<li><code>context上下文对象</code>: 包含了<code>props</code>和<code>children</code>等属性，可以作为配置数据和插槽内容传递给组件进行渲染。</li>
+</ul>
+<p>结构化组件适用于一些只依赖于外部数据，不依赖于组件自身实例和状态管理的场景,例如:<code>静态化组件</code>、<code>列表项组件</code>等。</p>
+<p>⚠️： 结构化组件也有一些限制和注意事项,例如:<code>无法自定义指令</code>、<code>无法使用组件自定义事件</code>等，需要结合具体场景进行选择和使用。</p>
+<h3 id="嵌套组件"><a href="#嵌套组件" class="headerlink" title="嵌套组件"></a>嵌套组件</h3><p>在Vue中，嵌套组件（Nested Component）指的是将一个组件作为另一个组件的子组件，形成层次化的组件结构。通过嵌套组件，我们可以将复杂的界面拆分成多个独立的组件，提高组件<code>复用性</code>和<code>可维护性</code>。</p>
+<p>嵌套组件的使用非常简单，只需要在父组件的模板中使用子组件即可。例如，我们可以定义一个<code>child子组件</code>，并在<code>parent父组件</code>中使用它：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 定义子组件 Child</span><br><span class="line">Vue.component(&apos;child&apos;, &#123;</span><br><span class="line">  template: &apos;&lt;div&gt;Child Component&lt;/div&gt;&apos;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// 定义父组件 Parent</span><br><span class="line">Vue.component(&apos;parent&apos;, &#123;</span><br><span class="line">  template: `</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;div&gt;Parent Component&lt;/div&gt;</span><br><span class="line">      &lt;child&gt;&lt;/child&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>在上面的代码中，我们定义了一个名为child的子组件和一个名为parent的父组件，父组件中通过<code>&lt;child&gt;&lt;/child&gt;</code>标签嵌套子组件。</p>
+<p>⚠️：在使用嵌套组件时，需要遵循以下原则：</p>
+<p>1、组件名称采用短横线命名法，例如<code>child-component</code>。</p>
+<p>2、父组件和子组件之间通过<code>props</code>和<code>event</code>进行数据和事件传递,减少组件之间的耦合性和依赖关系。</p>
+<p>综上所述，Vue中的嵌套组件可以很好地帮助我们实现界面<code>组件的拆分</code>、<code>复用</code>和<code>维护</code>。</p>
+<h3 id="结构化组件-和嵌套组件的区别"><a href="#结构化组件-和嵌套组件的区别" class="headerlink" title="结构化组件 和嵌套组件的区别"></a>结构化组件 和嵌套组件的区别</h3><p>结构化组件是<code>可复用的UI组件</code>，只用于<code>展示和交互</code>，没有太多的业务逻辑。结构化组件通常定义为<code>无状态组件</code>（Stateless Component），其主要作用是接收props属性，渲染出可复用的UI元素，从而支持在不同的业务场景中复用。</p>
+<p>嵌套组件则是用于业务组合的组件，通常具有业务逻辑和数据状态，包含多个结构化组件以及其他业务代码。嵌套组件主要用于实现更复杂的业务场景。嵌套组件通常需要定义为<code>有状态组件</code>（Stateful Component），并在内部管理自己的<code>状态（data）</code>和<code>行为（methods）</code>。</p>
+<p><strong>区别: </strong><br>1、结构化组件关注的是UI元素的展示和交互，通常只需要接收父组件传递的<code>props</code>属性，并根据<code>props</code>渲染出UI元素即可；<br>2、而嵌套组件关注的是业务逻辑，需要自己管理<code>状态</code>和<code>行为</code>，并根据状态相应地管理UI元素。</p>
+<p>⚠️：结构化组件和嵌套组件并不是两种互相排斥的概念，使用者在实际开发中需要根据具体的业务场景，合理地使用结构化组件和嵌套组件来支持灵活且高效的开发。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js/"># Vue.js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/04/18/vue19/">动态组件</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/17/vue17/">Vue组件通信方式</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>工具-VsCode添加背景图 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">工具-VsCode添加背景图</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: October 19, 2022&nbsp;&nbsp;10:17:16
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>开心工作，快乐编码！在VsCode中添加背景图，让每次编码都能放轻松😊！</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-6956eaf7649ed171.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="background.png"></p>
+<h1 id="mac中设置过程"><a href="#mac中设置过程" class="headerlink" title="mac中设置过程"></a>mac中设置过程</h1><h2 id="1、找到vscode"><a href="#1、找到vscode" class="headerlink" title="1、找到vscode"></a>1、找到vscode</h2><ul>
+<li>找到vscode，右键&gt; 选项&gt; 在访达中显示</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-ae9f76cd0691133c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="position.png"></p>
+<ul>
+<li>点击vscode，显示包内容</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-25be372b773286c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="contents.png"></p>
+<ul>
+<li>点击进入Contents-&gt;Resources-&gt;app-&gt;out-&gt;vs-&gt;workbench，并将背景图（如图：man.jpeg）添加到该文件夹</li>
+</ul>
+<p>❗️：第一次打开里面是没有图片的，这里面的文件是只读的，需要复制后修改然后替换文件！还有就是vscode更新后，会删除里面添加的内容。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-13b097edb736bd72.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="background.png"></p>
+<ul>
+<li>用编辑器打开<code>workbench.desktop.main.css</code> 文件，添加背景图片代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">body &#123;</span><br><span class="line">    pointer-events: auto !important;</span><br><span class="line">    background-size: 70% !important;</span><br><span class="line">    opacity: 0.7 !important;</span><br><span class="line">    background-position: 100% 0 !important;</span><br><span class="line">    background-image: url(&quot;./man.jpeg&quot;) !important;</span><br><span class="line">    content: &quot;&quot;;</span><br><span class="line">    position: absolute;</span><br><span class="line">    z-index: 999;</span><br><span class="line">    width: 100%;</span><br><span class="line">    background-repeat: no-repeat;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-885c3aae38d811be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="code.png"></p>
+<h2 id="2、重启编辑器"><a href="#2、重启编辑器" class="headerlink" title="2、重启编辑器"></a>2、重启编辑器</h2><p>重启之后，即可得到带有背景图的VsCode编辑器。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-6956eaf7649ed171.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="background.png"></p>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/tool/"># tool</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/19/JS6/">在JS中栈内存和堆内存分别存储什么数据？</a>
+            
+            
+            <a class="next" rel="next" href="/2022/08/04/vue16/">Vue.js3.0核心源码解析（2）：vnode 到真实 DOM 是如何转变的？</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

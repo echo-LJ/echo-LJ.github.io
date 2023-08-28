@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>leeCode-1823： 找出游戏的获胜者(约瑟夫环)-中等 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">leeCode-1823： 找出游戏的获胜者(约瑟夫环)-中等</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: August 16, 2023&nbsp;&nbsp;14:29:51
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h2 id="题目描述：-共有-n-名小伙伴一起做游戏。小伙伴们围成一圈，按-顺时针顺序-从-1-到-n-编号。确切地说，从第-i-名小伙伴顺时针移动一位会到达第-i-1-名小伙伴的位置，其中-1-lt-i-lt-n-，从第-n-名小伙伴顺时针移动一位会回到第-1-名小伙伴的位置。"><a href="#题目描述：-共有-n-名小伙伴一起做游戏。小伙伴们围成一圈，按-顺时针顺序-从-1-到-n-编号。确切地说，从第-i-名小伙伴顺时针移动一位会到达第-i-1-名小伙伴的位置，其中-1-lt-i-lt-n-，从第-n-名小伙伴顺时针移动一位会回到第-1-名小伙伴的位置。" class="headerlink" title="题目描述： 共有 n 名小伙伴一起做游戏。小伙伴们围成一圈，按 顺时针顺序 从 1 到 n 编号。确切地说，从第 i 名小伙伴顺时针移动一位会到达第 (i+1) 名小伙伴的位置，其中 1 &lt;= i &lt; n ，从第 n 名小伙伴顺时针移动一位会回到第 1 名小伙伴的位置。"></a>题目描述： 共有 n 名小伙伴一起做游戏。小伙伴们围成一圈，按 顺时针顺序 从 1 到 n 编号。确切地说，从第 i 名小伙伴顺时针移动一位会到达第 (i+1) 名小伙伴的位置，其中 1 &lt;= i &lt; n ，从第 n 名小伙伴顺时针移动一位会回到第 1 名小伙伴的位置。</h2><p>游戏遵循如下规则：</p>
+<p>从第 1 名小伙伴所在位置 开始 。<br>沿着顺时针方向数 k 名小伙伴，计数时需要 包含 起始时的那位小伙伴。逐个绕圈进行计数，一些小伙伴可能会被数过不止一次。<br>你数到的最后一名小伙伴需要离开圈子，并视作输掉游戏。<br>如果圈子中仍然有不止一名小伙伴，从刚刚输掉的小伙伴的 顺时针下一位 小伙伴 开始，回到步骤 2 继续执行。<br>否则，圈子中最后一名小伙伴赢得游戏。<br>给你参与游戏的小伙伴总数 n ，和一个整数 k ，返回游戏的获胜者。</p>
+<p><strong>示例1:</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-aff3e4777480fa4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-08-16 下午2.33.06.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">输入：n = 5, k = 2</span><br><span class="line">输出：3</span><br><span class="line">解释：游戏运行步骤如下：</span><br><span class="line">1) 从小伙伴 1 开始。</span><br><span class="line">2) 顺时针数 2 名小伙伴，也就是小伙伴 1 和 2 。</span><br><span class="line">3) 小伙伴 2 离开圈子。下一次从小伙伴 3 开始。</span><br><span class="line">4) 顺时针数 2 名小伙伴，也就是小伙伴 3 和 4 。</span><br><span class="line">5) 小伙伴 4 离开圈子。下一次从小伙伴 5 开始。</span><br><span class="line">6) 顺时针数 2 名小伙伴，也就是小伙伴 5 和 1 。</span><br><span class="line">7) 小伙伴 1 离开圈子。下一次从小伙伴 3 开始。</span><br><span class="line">8) 顺时针数 2 名小伙伴，也就是小伙伴 3 和 5 。</span><br><span class="line">9) 小伙伴 5 离开圈子。只剩下小伙伴 3 。所以小伙伴 3 是游戏的获胜者。</span><br></pre></td></tr></table></figure>
+<p><strong>示例2:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：n = 6, k = 5</span><br><span class="line">输出：1</span><br><span class="line">解释：小伙伴离开圈子的顺序：5、4、6、2、3 。小伙伴 1 是游戏的获胜者。</span><br></pre></td></tr></table></figure>
+<h2 id="题解方法一：深度优先搜索"><a href="#题解方法一：深度优先搜索" class="headerlink" title="题解方法一：深度优先搜索"></a>题解方法一：深度优先搜索</h2><p><strong><code>解题思路</code></strong></p>
+<ul>
+<li><p>一棵树的所有节点都有相同的值，当且仅当对于树上的每一条边的两个端点，它们都有相同的值（这样根据传递性，所有节点都有相同的值）。</p>
+</li>
+<li><p>因此，我们可以对树进行一次深度优先搜索。当搜索到节点 x 时，我们检查 x 与 x 的每一个子节点之间的边是否满足要求。</p>
+</li>
+<li>例如对于左子节点而言，如果其存在并且值与 x 相同，那么我们继续向下搜索该左子节点；如果值与 x 不同，那么我们直接返回 False。</li>
+</ul>
+<p>代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var isUnivalTree = function(root) &#123;</span><br><span class="line">    if (!root) return false</span><br><span class="line">    if(root.left)&#123;</span><br><span class="line">        if(root.val !== root.left.val || !isUnivalTree(root.left)) return false</span><br><span class="line">    &#125;</span><br><span class="line">    if(root.right)&#123;</span><br><span class="line">        if(root.val !== root.right.val || !isUnivalTree(root.right)) return false</span><br><span class="line">    &#125;</span><br><span class="line">    return true</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接:</p>
+<ul>
+<li><a href="https://leetcode.cn/problems/find-the-winner-of-the-circular-game/description/" target="_blank" rel="noopener">找出游戏的获胜者(约瑟夫环)-中等</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/算法-未解/"># 算法-未解</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/16/algorithm-169/">leeCode-169：多数元素(哈希查找、排序、摩尔投票解法)-简单</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/16/algorithm-400/">algorithm-400： 第 N 位数字-中等</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

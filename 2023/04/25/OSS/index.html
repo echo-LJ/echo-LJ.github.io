@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>阿里云分片上传oss | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">阿里云分片上传oss</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 25, 2023&nbsp;&nbsp;14:55:51
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+<h3 id="阿里云分片上传流程"><a href="#阿里云分片上传流程" class="headerlink" title="阿里云分片上传流程"></a>阿里云分片上传流程</h3><p><img src="https://upload-images.jianshu.io/upload_images/11846892-9f27ada9813746a3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-04-27 上午10.02.02.png"></p>
+<h3 id="阿里云分片上传的原理"><a href="#阿里云分片上传的原理" class="headerlink" title="阿里云分片上传的原理"></a>阿里云分片上传的原理</h3><ul>
+<li>1、客户端(配置分割大小)将文件分割成多个小文件(OSS SDK执行分割)，通常每个小文件大小为1MB-10MB,并上传到阿里云oss中。</li>
+<li>2、阿里云收到小文件，进行MD5校验，确保上传的数据准确无误。</li>
+<li>3、当所有的小文件完成后，客户端(OSS SDK)向阿里云发送一个合并请求(OSS SDK 调用completeMultipartUpload)。</li>
+<li>4、阿里云oss收到请求后，会将所有小文件按照指定顺序合并成一个完成的文件，并存储到指定的Bucket中。</li>
+</ul>
+<h3 id="分块上传如何如何保证中间不丢数据："><a href="#分块上传如何如何保证中间不丢数据：" class="headerlink" title="分块上传如何如何保证中间不丢数据："></a>分块上传如何如何保证中间不丢数据：</h3><p>使用阿里云OSS SDK的分片上传功能，<code>无需手动进行块编号和排序操作</code>，SDK会自动处理这些问题</p>
+<p><strong>预防几种情况：</strong></p>
+<ul>
+<li><code>块上传失败</code>: 当一个小块上传失败时，需要重新上传，成功之后需要进行MD5检验，确保是正确的数据。</li>
+<li><code>块上传顺序混乱</code>: 在上传多个小块的时候，需要按照编号顺序上传，否则合并后的文件将出现错误。OSS SDK自动确保分块按照其编号升序上传。</li>
+<li><code>块上传被取消</code>: 在分块上传过程中，如果出现了错误或者用户取消了上传操作，需要取消未完成的块上传。</li>
+<li><code>上传块的顺序变化</code>:  上传顺序的变化会导致文件合并出错，因此在进行分块上传时，需要确保上传顺序的不变性。</li>
+</ul>
+<p><strong>分片上传完成</strong>，阿里云OSS SDk内部会调用<code>completeMultipartUpload</code>API通知OSS进行文件合并</p>
+<p>在进行阿里云分片上传时，客户端需要按照指定的大小分割文件，并设置并发上传数，以确保上传的效率和稳定性。同时，阿里云OSS也提供了断点续传和秒传等功能，进一步提高了分片上传的效果和性能。</p>
+<h3 id="怎么保证多个分块属于同一个文件"><a href="#怎么保证多个分块属于同一个文件" class="headerlink" title="怎么保证多个分块属于同一个文件"></a>怎么保证多个分块属于同一个文件</h3><p>当文件开始进行分块上传时会生成一个文件任务id：<br>文件进行分割时每个分块会有一个part_number变量：指代当前分块在整个数据流中的编号<br>每个分块开始上传的时候会生成一个分块id：用来标识哪些块属于同一个大文件与文件任务id进行绑定，<br><strong>怎么进行分割</strong><br>通过file.read方法读取对应大小的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">chunk_size = 8 * 1024 * 1024  # 设置每个分块的大小，8MB</span><br><span class="line"></span><br><span class="line">data = file.read(chunk_size)</span><br><span class="line">            if not data:</span><br><span class="line">                break</span><br></pre></td></tr></table></figure></p>
+<h3 id="分块上传之后如何验证上传成功"><a href="#分块上传之后如何验证上传成功" class="headerlink" title="分块上传之后如何验证上传成功"></a>分块上传之后如何验证上传成功</h3><p>验证分块上传的完整性和正确性的方法如下：</p>
+<ul>
+<li><p>当每个块上传结束后，客户端可以通过比较本地计算出的MD5值和OSS返回的ETag值是否相等来检查块是否上传正确。如果两者不一致，则表示该块上传失败，需要重新上传；</p>
+</li>
+<li><p>当所有块上传至阿里云后，OSS服务会将各个块的MD5值合并计算，并得到上传文件的MD5值，在完成分块上传后返回给客户端，客户端可以通过比较本地计算出的MD5值和OSS返回的MD5值是否相等来检查上传文件是否上传正确。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import hashlib</span><br><span class="line"></span><br><span class="line"># 计算文件的MD5值</span><br><span class="line">def get_md5(file):</span><br><span class="line">    m = hashlib.md5()</span><br><span class="line">    while True:</span><br><span class="line">        data = file.read(4096)</span><br><span class="line">        if not data:</span><br><span class="line">            break</span><br><span class="line">        m.update(data)</span><br><span class="line">    return m.hexdigest()</span><br><span class="line"></span><br><span class="line"># 比较本地计算出的MD5值和OSS返回的MD5值是否相同</span><br><span class="line">def check_md5(file_path, md5):</span><br><span class="line">    with open(file_path, &apos;rb&apos;) as f:</span><br><span class="line">        local_md5 = get_md5(f)</span><br><span class="line">        return local_md5 == md5</span><br><span class="line"></span><br><span class="line"># 获取OSS返回的文件MD5值</span><br><span class="line">def get_file_md5(bucket, object_name, upload_id):</span><br><span class="line">    e_tags = []</span><br><span class="line">    for part in oss2.ObjectIterator(bucket, key_marker=object_name,</span><br><span class="line">                                    upload_id_marker=upload_id):</span><br><span class="line">        e_tags.append(part.etag.strip(&apos;&quot;&apos;))</span><br><span class="line">    return hashlib.md5(&apos;&apos;.join(e_tags).encode(&apos;utf-8&apos;)).hexdigest()</span><br></pre></td></tr></table></figure>
+<h3 id="分片上传生成的文件任务id和分块顺序标识"><a href="#分片上传生成的文件任务id和分块顺序标识" class="headerlink" title="分片上传生成的文件任务id和分块顺序标识"></a>分片上传生成的文件任务id和分块顺序标识</h3><ul>
+<li>ossSDK调用InitiateMultipartUpload API 服务端返回的是一个唯一标识上传任务的uploadId</li>
+<li>分块上传时将 uploadId partNumber 两个参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">import oss2</span><br><span class="line"></span><br><span class="line"># 替换成您自己的AccessKeyId和AccessKeySecret</span><br><span class="line">auth = oss2.Auth(&apos;&lt;yourAccessKeyId&gt;&apos;, &apos;&lt;yourAccessKeySecret&gt;&apos;)</span><br><span class="line"></span><br><span class="line"># 创建Bucket对象</span><br><span class="line">bucket = oss2.Bucket(auth, &apos;https://&lt;yourBucketName&gt;.&lt;yourEndpoint&gt;&apos;, &apos;&lt;yourBucketName&gt;&apos;)</span><br><span class="line"></span><br><span class="line"># 准备要分片上传的文件</span><br><span class="line">object_name = &apos;example.zip&apos;</span><br><span class="line">file_path = &apos;&lt;path_to_your_local_file&gt;/example.zip&apos;</span><br><span class="line">chunk_size = 8 * 1024 * 1024  # 设置每个分块的大小，8MB</span><br><span class="line">upload_id = &apos;&apos;  # 用于标识上传任务的uploadId变量，API调用InitiateMultipartUpload（开启分块上传）方法返回的值</span><br><span class="line">part_number = 1  # 分块编号，按照从1开始递增</span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line">    # 开始上传任务</span><br><span class="line">    # ossSDK调用InitiateMultipartUpload API 服务端返回的是一个唯一标识上传任务的uploadId</span><br><span class="line">    result = bucket.init_multipart_upload(object_name)</span><br><span class="line">    upload_id = result.upload_id</span><br><span class="line"></span><br><span class="line">    // print函数的作用是用来输出上传分块的信息，包括分块的序号和MD5值等信息，以便于开发人员进行调试和监控上传进度。</span><br><span class="line">    // 每个分块成功上传至阿里云OSS后，都会返回该块的MD5值（即ETag值），开发人员可以根据该值验证上传的块是否正确。</span><br><span class="line"></span><br><span class="line">    print(&apos;InitiateMultipartUpload success. UploadId:&apos;, upload_id)</span><br><span class="line">    </span><br><span class="line">    # 分块上传文件</span><br><span class="line">    with open(file_path, &apos;rb&apos;) as file:</span><br><span class="line">        while True:</span><br><span class="line">            data = file.read(chunk_size)</span><br><span class="line">            if not data:</span><br><span class="line">                break</span><br><span class="line">            # 并且会在object_name加上upload_id参数，将每个上传块标识与该upload_id关联在一起</span><br><span class="line">            # part_number指代当前分块在整个数据流中的编号</span><br><span class="line">            res = bucket.upload_part(object_name, upload_id, part_number, data)</span><br><span class="line">            e_tag = res.etag  # 获取响应结果的ETag字段（MD5值）</span><br><span class="line">            print(&apos;PartNumber:&apos;, part_number, &apos;ETag:&apos;, e_tag)</span><br><span class="line">            part_number += 1</span><br><span class="line">            </span><br><span class="line">    print(&apos;All parts have been uploaded.&apos;)</span><br><span class="line">    </span><br><span class="line">    # 合并分块上传的数据</span><br><span class="line">    bucket.complete_multipart_upload(object_name, upload_id, [oss2.models.PartInfo(i, e_tag) for i, e_tag in enumerate(e_tags, 1)])</span><br><span class="line">    print(&apos;CompleteMultipartUpload success. UploadId:&apos;, upload_id)</span><br><span class="line"></span><br><span class="line">except Exception as e:</span><br><span class="line">    if upload_id:</span><br><span class="line">        bucket.abort_multipart_upload(object_name, upload_id)</span><br><span class="line">    print(&apos;MultipartUpload failed:&apos;, e)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="文档库文件上传需求实现原理："><a href="#文档库文件上传需求实现原理：" class="headerlink" title="文档库文件上传需求实现原理："></a>文档库文件上传需求实现原理：</h3><p>1、上传文件，前端生成md5访问服务端是否有对应文件，如果存在，直接调用保存接口。<br>2、不存在：调用aliyun-OSS SDk 分片上传功能<br>3、执行oss-sdk分片上传流程<br>4、停止上传: 调用aliyun oss-sdk 的abortMultipartUpload 方法停止<br>5、继续上传: 采用断点续传上传功能，（先调接口查询该文件是否已存在） 通过后端调用阿里云服务器的checkpoint接口获取到当前point数据，前端调用osd-sdk的断点续传功能继续上传，<br>6、上传成功，oss-sdk触发回调函数，前端调用保存接口，完成上传流程。</p>
+<h3 id="阿里云oss-sdk上传流程"><a href="#阿里云oss-sdk上传流程" class="headerlink" title="阿里云oss-sdk上传流程"></a>阿里云oss-sdk上传流程</h3><p>1、开始<br>2、文件分块<br>3、触发initMultipartUpload方法生成upload id 返回给前端<br>4、调用分片上传方法<br>5、判断是否为最后一个分块<br>6、发送合并请求<br>7、完成上传。</p>
+<p><strong>分片上传完成之后aliyun返回的数据</strong><br><img src="https://upload-images.jianshu.io/upload_images/11846892-c7577b7a082d9405.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-04-27 下午2.04.45.png"><br><strong>停止上传后端调用的checkpoint返回的数据</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-c3d4d55b372c4efa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-04-27 下午2.08.41.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">// Vue.js 示例代码</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;input type=&quot;file&quot; @change=&quot;onChangeUploadFile&quot;&gt;</span><br><span class="line">    &lt;button @click=&quot;startUpload&quot;&gt;开始上传&lt;/button&gt;</span><br><span class="line">    &lt;button @click=&quot;pauseUpload&quot;&gt;暂停上传&lt;/button&gt;</span><br><span class="line">    &lt;button @click=&quot;resumeUpload&quot;&gt;继续上传&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import OSS from &apos;ali-oss&apos;;</span><br><span class="line">import OSSVue from &apos;vue-oss-upload&apos;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      client: null, // OSS 客户端对象</span><br><span class="line">      objectName: &apos;&apos;, // 文件在 OSS 中的 object key</span><br><span class="line">      file: null, // 待上传的文件对象</span><br><span class="line">      uploadId: &apos;&apos;, // 当前上传任务的 ID</span><br><span class="line">      partInfo: [], // 当前文件已上传块的信息</span><br><span class="line">      progress: 0, // 当前已上传进度</span><br><span class="line">      isUploading: false // 当前是否正在上传</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    // 初始化阿里云 OSS 客户端对象</span><br><span class="line">    initOSSClient() &#123;</span><br><span class="line">      this.client = new OSS(&#123;</span><br><span class="line">        region: &apos;oss-cn-hangzhou&apos;, // 区域节点</span><br><span class="line">        accessKeyId: &apos;your-access-key-id&apos;, // Access Key ID</span><br><span class="line">        accessKeySecret: &apos;your-access-key-secret&apos;, // Access Key Secret</span><br><span class="line">        bucket: &apos;your-bucket-name&apos; // 存储空间名称</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    // 选择上传的文件</span><br><span class="line">    onChangeUploadFile(event) &#123;</span><br><span class="line">      this.file = event.target.files[0];</span><br><span class="line">      this.objectName = this.file.name;</span><br><span class="line">      this.progress = 0;</span><br><span class="line">    &#125;,</span><br><span class="line">    // 开始上传文件</span><br><span class="line">    startUpload() &#123;</span><br><span class="line">      this.initOSSClient();</span><br><span class="line">      // 初始化上传任务</span><br><span class="line">      this.client.multipartUpload(this.objectName, this.file)</span><br><span class="line">        .then((result) =&gt; &#123;</span><br><span class="line">          this.uploadId = result.uploadId;</span><br><span class="line">          this.partInfo = result.partList;</span><br><span class="line">          this.isUploading = true;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    // 暂停上传任务</span><br><span class="line">    pauseUpload() &#123;</span><br><span class="line">      this.client.abortMultipartUpload(this.objectName, this.uploadId)</span><br><span class="line">        .then((result) =&gt; &#123;</span><br><span class="line">          this.partInfo = result.partList; // 保存已上传块的信息</span><br><span class="line">          this.isUploading = false;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    // 继续上传任务</span><br><span class="line">    resumeUpload() &#123;</span><br><span class="line">      this.isUploading = true;</span><br><span class="line">      // 恢复上传任务</span><br><span class="line">      this.uploadParts(this.objectName, this.partInfo, this.uploadId, this.file)</span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">          console.log(&apos;续传成功&apos;);</span><br><span class="line">          this.partInfo = []; // 清空已上传块的信息</span><br><span class="line">          this.isUploading = false;</span><br><span class="line">        &#125;)</span><br><span class="line">        .catch((err) =&gt; &#123;</span><br><span class="line">          console.log(&apos;续传失败: &apos;, err);</span><br><span class="line">          this.isUploading = false;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    // 上传分块</span><br><span class="line">    async uploadPart(part) &#123;</span><br><span class="line">      const partNumber = part.number;</span><br><span class="line">      const &#123; client, objectName, uploadId &#125; = this;</span><br><span class="line">      return await client.uploadPart(objectName, uploadId, partNumber, part.part)</span><br><span class="line">        .then((&#123; ETag &#125;) =&gt; &#123;</span><br><span class="line">          part.ETag = ETag;</span><br><span class="line">          return part;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    // 上传所有分块</span><br><span class="line">    async uploadParts(objectName, parts, uploadId, file) &#123;</span><br><span class="line">      const &#123; client &#125; = this;</span><br><span class="line">      return await Promise.all(parts.map(async (part) =&gt; &#123;</span><br><span class="line">        part.part = file.slice(part.offset, part.offset + part.size);</span><br><span class="line">        return await this.uploadPart(part);</span><br><span class="line">      &#125;)).then(async (partList) =&gt; &#123;</span><br><span class="line">        return await client.completeMultipartUpload(objectName, uploadId, partList)</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="MD5是什么？"><a href="#MD5是什么？" class="headerlink" title="MD5是什么？"></a>MD5是什么？</h3><p>MD5值是一种哈希算法，用于将任意长度的数据转换为固定长度的数据字符串，通常是32个字符。该算法具有不可逆性和唯一性，即对于同一个输入数据，其输出结果是唯一的，而且无法从输出结果反推出原始的输入数据。因此，MD5值可以用于验证数据完整性和正确性，确保数据在传输过程中没有被篡改或者损坏。</p>
+<h3 id="Bucket是什么？"><a href="#Bucket是什么？" class="headerlink" title="Bucket是什么？"></a>Bucket是什么？</h3><h2 id="Bucket原意为桶，是用户用来管理所存储对象的存储空间。-需要注意的是，用户可拥有多个Bucket，但其名称在OSS中必须是全局唯一的，一旦创建便无法修改，其内部对象数量不限"><a href="#Bucket原意为桶，是用户用来管理所存储对象的存储空间。-需要注意的是，用户可拥有多个Bucket，但其名称在OSS中必须是全局唯一的，一旦创建便无法修改，其内部对象数量不限" class="headerlink" title="Bucket原意为桶，是用户用来管理所存储对象的存储空间。 需要注意的是，用户可拥有多个Bucket，但其名称在OSS中必须是全局唯一的，一旦创建便无法修改，其内部对象数量不限"></a>Bucket原意为桶，是用户用来管理所存储对象的存储空间。 需要注意的是，用户可拥有多个Bucket，但其名称在OSS中必须是全局唯一的，一旦创建便无法修改，其内部对象数量不限</h2><p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://help.aliyun.com/document_detail/31850.html" target="_blank" rel="noopener">阿里云OSS文档</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/oss/"># oss</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/05/05/css1/">CSS盒模型</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/24/css-loader/">style-loader、css-loader、postcss-loader、file-loader、 url-loader</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

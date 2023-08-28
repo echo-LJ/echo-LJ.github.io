@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>style-loader、css-loader、postcss-loader、file-loader、 url-loader | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">style-loader、css-loader、postcss-loader、file-loader、 url-loader</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 24, 2023&nbsp;&nbsp;14:31:40
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+<p>css-loader 是 Webpack 的模块化构建工具中的一个 loader。</p>
+<h3 id="css-loader作用"><a href="#css-loader作用" class="headerlink" title="css-loader作用"></a>css-loader作用</h3><p>主要功能是将CSS文件转化为JavaScript模块, 通过 css-loader，webpack 可以将 CSS 文件作为一个模块引入到 JavaScript 中，从而实现样式的<code>模块化管理</code>.</p>
+<ul>
+<li><strong>将 CSS 文件作为模块引入到 JavaScript 中;</strong></li>
+<li><strong>将 CSS 文件解析成 AST(抽象语法树) - postcss-loader的能力</strong></li>
+<li><strong>处理文件中的@import、url()等链接；</strong></li>
+<li><strong>支持样式模块化，可以为样式添加局部作用域；</strong></li>
+</ul>
+<h3 id="1、将-CSS-文件作为模块引入到-JavaScript-中"><a href="#1、将-CSS-文件作为模块引入到-JavaScript-中" class="headerlink" title="1、将 CSS 文件作为模块引入到 JavaScript 中"></a>1、将 CSS 文件作为模块引入到 JavaScript 中</h3><p>在前端项目中，引入多个css样式文件</p>
+<p><strong>传统方案:</strong>在HTML中使用<code>&lt;link&gt;</code>标签,在js中通过操作DOM来修改样式，这种方式存在一些问题：</p>
+<ul>
+<li>页面加载速度慢，存在阻塞；</li>
+<li>CSS无法使用模块化管理，不利于复用和维护；</li>
+</ul>
+<p><strong>webpack+css-loader:</strong>  <code>webpack利用css-loader将css转换成JS 模块，并将模块引入到 JavaScript 文件中。在运行时，webpack 会通过 js 代码注入 style 标签来实现样式的展示。</code></p>
+<ul>
+<li><p>webpack中添加对应的css-loader配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.css$/i,</span><br><span class="line">        use: [</span><br><span class="line">          &apos;style-loader&apos;,</span><br><span class="line">          &apos;css-loader&apos;,</span><br><span class="line">        ],</span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 JavaScript 文件中引入 CSS 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./style.css&apos;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="2、postcss-loader-将-CSS-文件解析成-AST-抽象语法树"><a href="#2、postcss-loader-将-CSS-文件解析成-AST-抽象语法树" class="headerlink" title="2、postcss-loader: 将 CSS 文件解析成 AST(抽象语法树)"></a>2、postcss-loader: 将 CSS 文件解析成 AST(抽象语法树)</h3><p><code>postcss-loader</code>的功能是实现各种 CSS 预处理、后处理的功能，例如添加浏览器前缀、使用变量、嵌套规则等等</p>
+<p><code>postcss-loader</code>的原理是把 CSS 代码解析成抽象语法树结构（Abstract Syntax Tree，AST），再交由其内部<code>插件</code>来将 AST 格式转换为 CSS 格式、进行压缩等.</p>
+<p><code>postcss-loader</code>支持 Source Map。通过开启 Source Map 选项，可以在浏览器的开发者工具中准确的显示样式所在的源文件和行号，方便进行调试。</p>
+<p>例如<code>Autoprefixer插件:</code>添加浏览器前缀到CSS内容里.</p>
+<p>插件基于 CSS 代码的 AST 所能进行的操作是多种多样的,例如：</p>
+<p>1、可以支持变量和混入（mixin）<br>2、增加浏览器相关的声明前缀<br>3、使用将来的 CSS 规范的样式规则转译（transpile）成当前的 CSS 规范支持的格式<br>4、等等</p>
+<p>可参考：<a href="https://echo-lj.github.io/2023/05/12/css11/" target="_blank" rel="noopener">谈谈对前端CSS工程化的理解</a></p>
+<h3 id="3、处理文件中的-import、url-等链接；"><a href="#3、处理文件中的-import、url-等链接；" class="headerlink" title="3、处理文件中的@import、url()等链接；"></a>3、处理文件中的@import、url()等链接；</h3><p>(css-loader)[<a href="https://webpack.docschina.org/loaders/css-loader/]" target="_blank" rel="noopener">https://webpack.docschina.org/loaders/css-loader/]</a> 官方API: css-loader 会对 @import 和 url() 进行处理，就像 js 解析 import/require() 一样。</p>
+<p><strong>处理 url() 导入的图片等资源链接</strong></p>
+<ul>
+<li>css-loader 会将这些链接转换为 require() 导入的形式，webpack在解析的时候，通过require()函数，会自动处理图片等静态资源，通过<code>file-loader</code>并将它们打包到输出目录中.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// 转换前</span><br><span class="line">/* main.css */</span><br><span class="line">.logo &#123;</span><br><span class="line">  background-image: url(&apos;./logo.png&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//css-loader转换后</span><br><span class="line"></span><br><span class="line">// main.css.js</span><br><span class="line"></span><br><span class="line">exports.locals = &#123;</span><br><span class="line">  logo: &apos;main_logo_hash&apos;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">exports.use = function() &#123;</span><br><span class="line">  var styles = [];</span><br><span class="line">  styles.push(&quot;.main_logo_hash &#123;\n  background-image: url(&quot; + require(&quot;./logo.png&quot;) + &quot;);\n&#125;&quot;);</span><br><span class="line">  return styles;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>处理 @import 导入的 CSS 文件</strong></p>
+<p>当 CSS 文件中通过 @import 导入其他 CSS 文件时，css-loader 会将被导入的 CSS 文件一起打包到 JavaScript 中，并返回代表导入后的样式的 JavaScript 对象。这可以<code>减少网络请求次数</code>，<code>提高页面加载速度</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">/* reset.css */</span><br><span class="line">body &#123;</span><br><span class="line">  margin: 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* main.css */</span><br><span class="line">@import &apos;reset.css&apos;;</span><br><span class="line">.container &#123;</span><br><span class="line">  width: 100%;</span><br><span class="line">&#125;</span><br><span class="line">// 转换后</span><br><span class="line">// main.css.js</span><br><span class="line"></span><br><span class="line">exports.locals = &#123;</span><br><span class="line">  container: &apos;main_container_hash&apos;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">exports.use = function() &#123;</span><br><span class="line">  var styles = [];</span><br><span class="line">  styles.push(require(&quot;./reset.css.js&quot;));</span><br><span class="line">  return styles;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="4、支持样式模块化，可以为样式添加局部作用域"><a href="#4、支持样式模块化，可以为样式添加局部作用域" class="headerlink" title="4、支持样式模块化，可以为样式添加局部作用域"></a>4、支持样式模块化，可以为样式添加局部作用域</h3><p>css-loader 支持样式模块化，可以为每个 CSS 文件添加局部作用域，避免样式冲突等问题。<br>css-loader 会为每个模块生成一个独一无二的类名，并在模块样式中引用该类名，从而实现样式作用域的隔离。</p>
+<h3 id="file-loader"><a href="#file-loader" class="headerlink" title="file-loader"></a>file-loader</h3><p>file-loader是处理静态资源文件的地址的，解决图片引入问题，将图片原封不动拷贝到指定目录，默认为dist</p>
+<h4 id="url-loader"><a href="#url-loader" class="headerlink" title="url-loader"></a>url-loader</h4><p>url-loader 与file-loader类似，除此以外它还可以设置图片小于limit值时，将小体积的图片等静态资源转换为 base64 编码插入到 CSS 文件或 HTML 文件中，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// webpack中url-loader的配置方式</span><br><span class="line">&#123;</span><br><span class="line">            loader: &apos;url-loader&apos;,</span><br><span class="line">            options: &#123;</span><br><span class="line">              limit: 1024 * 10, // 小于 10KB 的图片转换为 base64 编码</span><br><span class="line">              name: &apos;images/[name].[hash:8].[ext]&apos; // 输出名称格式</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码配置了 url-loader，并将该 loader 的参数配置在 options 属性中。其中，我们指定了 limit 参数，表示小于 10KB 的图片会被转换为 base64 编码，而大于该值的图片则会被处理成文件格式并保存到输出目录。我们还指定了 name 参数，该参数具体含义请参考文档。</p>
+<h3 id="style-loader"><a href="#style-loader" class="headerlink" title="style-loader"></a>style-loader</h3><p>style-loader 的作用是把 CSS 插入到 DOM 中，就是处理 css-loader 导出的模块数组，然后将样式通过 style 标签或者其他形式插入到 DOM 中。</p>
+<h3 id="多个loader配合使用时，处理顺序是：从下到上，从右到左-的顺序"><a href="#多个loader配合使用时，处理顺序是：从下到上，从右到左-的顺序" class="headerlink" title="多个loader配合使用时，处理顺序是：从下到上，从右到左 的顺序"></a>多个loader配合使用时，处理顺序是：从下到上，从右到左 的顺序</h3><h3 id="webpack配置loader"><a href="#webpack配置loader" class="headerlink" title="webpack配置loader"></a>webpack配置loader</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">var path = require(&apos;path&apos;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">context: path.join(__dirname, &apos;app&apos;),</span><br><span class="line">entry: &apos;./app&apos;,</span><br><span class="line">output: &#123;</span><br><span class="line">path: path.join(__dirname, &apos;dist&apos;),</span><br><span class="line">filename: &apos;bundle.js&apos;</span><br><span class="line">&#125;,</span><br><span class="line">module: &#123;</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: /\.css$/,</span><br><span class="line">loader: &quot;style-loader!css-loader!postcss-loader!less-loader&quot;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">&#125;,</span><br><span class="line">postcss: function () &#123;</span><br><span class="line">return [require(&apos;autoprefixer&apos;)];</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://juejin.cn/post/6844904057568493582" target="_blank" rel="noopener">透过现象看webpack处理css文件中图片路径转换的具体过程</a></li>
+<li><a href="https://juejin.cn/post/6944668149849522213" target="_blank" rel="noopener">Webpack进阶 :less-loader、css-loader、style-loader实现原理</a></li>
+<li><a href="https://webpack.docschina.org/loaders/css-loader/" target="_blank" rel="noopener">css-loader</a></li>
+<li><a href="https://www.cnblogs.com/goloving/p/14793201.html" target="_blank" rel="noopener">浅析css-loader和style-loader的作用、css-loader和style-loader是如何配合使用的、less-loader和css-loader和style-loader的实现原理</a></li>
+<li><a href="https://www.yelcat.cc/index.php/archives/1123/" target="_blank" rel="noopener">使用PostCSS进行CSS处理</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/webpack/"># webpack</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/04/25/OSS/">阿里云分片上传oss</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/23/Babel/">Babel源码详解</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

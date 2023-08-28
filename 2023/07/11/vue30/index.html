@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Vue数据响应式的理解 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue数据响应式的理解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: July 11, 2023&nbsp;&nbsp;13:36:21
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+<h2 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h2><p>1、响应式的概念？<br>2、为什么Vue需要响应式？<br>3、响应式的好处？<br>4、Vue的响应式是如何实现的？有哪些优缺点？<br>5、Vue3中的响应式的新变化</p>
+<h2 id="回答范例"><a href="#回答范例" class="headerlink" title="回答范例"></a>回答范例</h2><p>1、所谓数据响应式就是<strong>能够使数据变化可以被检测并对这种变化做出响应的机制</strong><br>2、MVVM框架中要解决的一个核心问题是：连接数据层和视图层,通过<strong>数据驱动</strong>应用,数据变化 =&gt;视图更新,要做到这点的就需要对数据做响应式处理,这样一旦数据发生变化就立即做出更新操作。（举例简答：解决驱动问题让用户规避细节,例如DOM操作。）<br>3、以vue为例说明,通过数据响应式加上虚拟DOM和patch算法,开发人员只需要操作数据,关心业务,完全不需要接触繁琐的DOM操作,从而大大提升开发效率,降低开发难度。<br>4、Vue2中的数据响应式会根据数据的类型做不同的处理，如果是对象则采用 <strong><code>Object.defineProperty()</code>的方式定义数据拦截，当数据被访问或发生变化时，我们感知并做出响应。如果是数组则通过覆盖数组对象原型上的7个变更方法，使这些方法可以做出额外的更新通知，从而做出响应。</strong>这种机制很好的解决了数据响应式变化的问题，但在实际使用时也存在一些<strong>缺点：</strong>比如初始化时的递归会造成性能的浪费，新增或删除属性时需要用户使用<code>Vue.set/delet</code>这样的特殊API，对于ES6中新产生的Map、Set这些数据结构不支持的问题。</p>
+<p>【缺点：在实现Object.defineProperty() 时，需要循环便利数据对象，在初始化时必须递归，才能实现响应式，如果不使用该数据，则是对性能的浪费。<br>数组的实现，覆盖了数组的7个方法，才能实现对数组的响应式拦截，实现的复杂，造成了用户使用的复杂度升高，新增和删除属性需要使用<code>Vue.set/delet</code>这样的特殊API】<br>5、Vue3中重新编写这一部分的实现：利用ES6的<code>Proxy代理</code>，变成体验好，不需要特殊的api，初始化性能和内存消耗都得到了大幅度改善；另外响应式的实现代码被抽取为独立的<code>reactivity包</code>[独立于vue的实现]，使得我们更灵活的使用它，第三方的扩展开发更灵活起来。</p>
+<p>【类似于之前的router vuex等不需要依赖，vue只需要使用reactivity包即可】<br>【初始化遍历的问题，<code>Proxy代理</code>可以做懒处理，在数据未访问前不做深层次的递归，直到访问时做响应式处理<br><code>Proxy代理</code>兼容性差一点】</p>
+<h2 id="vue2的响应式实现：defineReactive源码地址"><a href="#vue2的响应式实现：defineReactive源码地址" class="headerlink" title="vue2的响应式实现：defineReactive源码地址"></a>vue2的响应式实现：<a href="https://github1s.com/vuejs/vue/blob/HEAD/src/core/observer/index.ts#L128" target="_blank" rel="noopener">defineReactive源码地址</a></h2><p>代码梳理：<br>1、 对object的值做defineProperty处理<br>2、每次defineReactive只能处理object中某一个key<br>3、<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$  let childOb = !shallow &amp;&amp; observe(val, false, mock)</span><br></pre></td></tr></table></figure></p>
+<p>observe做递归处理，如果当前值仍是对象，所以无论数据是否使用，递归在初始化都会触发。<br>4、对当前对象的key做拦截，每次get时，做依赖收集。<br>5、set是通知机制，当数据发生变化时，通知更新，通过<code>dep.notify()</code>方法。</p>
+<h2 id="vue3的响应式实现：reactivity源码地址"><a href="#vue3的响应式实现：reactivity源码地址" class="headerlink" title="vue3的响应式实现：reactivity源码地址"></a>vue3的响应式实现：<a href="https://github1s.com/vuejs/core/blob/HEAD/packages/reactivity/src/reactive.ts" target="_blank" rel="noopener">reactivity源码地址</a></h2><p>代码梳理：<br>1、 createReactiveObject：创建响应式对象，传入对象，与vue2的区别是可直接对对象做处理，不需要知道对象内的key,避免了初始化的递归</p>
+<p>2、<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const proxy = new Proxy(</span><br><span class="line">   target,</span><br><span class="line">   targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers</span><br><span class="line"> )</span><br><span class="line"> proxyMap.set(target, proxy)</span><br><span class="line"> return proxy</span><br></pre></td></tr></table></figure></p>
+<p>创建新的代理对象，数据被访问时通过collectionHandlers 或baseHandlers处理访问，区分两种Handlers取决于对象的类型<br>3、mutableHandlers：所有的操作会在该方法中执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">export const mutableHandlers: ProxyHandler&lt;object&gt; = &#123;</span><br><span class="line">  get,</span><br><span class="line">  set,</span><br><span class="line">  deleteProperty,</span><br><span class="line">  has,</span><br><span class="line">  ownKeys</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为什么可以取代vue2中数组的特殊实现，和vue.set/delete特殊api,是因为proxy本身支持deleteProperty,set中也支持了动态新增</p>
+<h2 id="可能追问"><a href="#可能追问" class="headerlink" title="可能追问"></a>可能追问</h2><p>1、为什么需要使用<code>Vue.set/delet</code><br>2、什么是依赖收集，看get方法。</p>
+<hr>
+<p>总结:大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接:</p>
+<ul>
+<li><a href="https://github1s.com/vuejs/core/blob/HEAD/packages/runtime-core/src/renderer.ts#L1549-L1550" target="_blank" rel="noopener">查看Vue源码地址</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js/"># Vue.js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/07/11/algorithm-125/">leeCode-125：验证回文串(双指针解法)-简单</a>
+            
+            
+            <a class="next" rel="next" href="/2023/07/10/vue29/">Vue项目权限管理如何做？控制到按钮级别怎么做？</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

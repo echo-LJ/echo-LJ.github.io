@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Vue.js3.0核心源码解析（2）：vnode 到真实 DOM 是如何转变的？ | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue.js3.0核心源码解析（2）：vnode 到真实 DOM 是如何转变的？</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: August 4, 2022&nbsp;&nbsp;10:19:02
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p><img src="https://upload-images.jianshu.io/upload_images/11846892-64395ade5a45268b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2022-08-05 上午10.59.00.png"></p>
+<p>组件系统是 Vue.js 的一个重要概念，它是一种对 DOM 结构的抽象，我们可以使用小型、独立和通常可复用的组件构建大型应用。几乎任意类型的应用界面都可以抽象为一个组件树，如下：<br><img src="https://upload-images.jianshu.io/upload_images/11846892-1dfb7e998f929e66.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2022-08-04 上午10.26.49.png"></p>
+<p>组件化也是 Vue.js 的核心思想之一，它允许我们用模板加对象描述的方式去创建一个组件，再加上我们给组件注入不同的数据，就可以完整地渲染出组件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">模版+对象描述+数据 = 组件</span><br></pre></td></tr></table></figure></p>
+<p>当数据更新后，组件可以自动重新渲染，因此用户只需要专注于数据逻辑的处理，而无须关心 DOM 的操作，无论是开发体验和开发效率都得到了很大的提升。</p>
+<h3 id="应用程序初始化"><a href="#应用程序初始化" class="headerlink" title="应用程序初始化"></a>应用程序初始化</h3><p>一个组件可以通过“模板加对象描述”的方式创建，组件创建好以后是如何被调用并初始化的呢？因为整个组件树是由根组件开始渲染的，为了找到根组件的渲染入口，我们需要从应用程序的初始化过程开始分析。</p>
+<p>在这里，我分别给出了通过 Vue.js 2.x 和 Vue.js 3.0 来初始化应用的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 在 Vue.js 2.x 中，初始化一个应用的方式如下</span><br><span class="line">import Vue from &apos;vue&apos;</span><br><span class="line">import App from &apos;./App&apos;</span><br><span class="line">const app = new Vue(&#123;</span><br><span class="line">  render: h =&gt; h(App)</span><br><span class="line">&#125;)</span><br><span class="line">app.$mount(&apos;#app&apos;)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 在 Vue.js 3.0 中，初始化一个应用的方式如下</span><br><span class="line">import &#123; createApp &#125; from &apos;vue&apos;</span><br><span class="line">import App from &apos;./app&apos;</span><br><span class="line">const app = createApp(App)</span><br><span class="line">app.mount(&apos;#app&apos;)</span><br></pre></td></tr></table></figure>
+<p>Vue.js 3.0 初始化应用的方式和 Vue.js 2.x 差别并不大，本质上都是把 App 组件挂载到 id 为 app 的 DOM 节点上。</p>
+<p>但是，在 Vue.js 3.0 中还导入了一个 createApp，其实这是个入口函数，它是 Vue.js 对外暴露的一个函数，我们来看一下它的内部实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const createApp = ((...args) =&gt; &#123;</span><br><span class="line">  // 创建 app 对象</span><br><span class="line">  const app = ensureRenderer().createApp(...args)</span><br><span class="line">  const &#123; mount &#125; = app</span><br><span class="line">  // 重写 mount 方法</span><br><span class="line">  app.mount = (containerOrSelector) =&gt; &#123;</span><br><span class="line">    // ...</span><br><span class="line">  &#125;</span><br><span class="line">  return app</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>createApp 主要做了两件事情：创建 app 对象和重写 app.mount 方法。</p>
+<p><strong><code>1、创建 app 对象</code></strong><br>首先，我们使用 ensureRenderer().createApp() 来创建 app 对象 ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const app = ensureRenderer().createApp(...args)</span><br></pre></td></tr></table></figure></p>
+<p>其中 ensureRenderer() 用来创建一个渲染器对象，它的内部代码是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">// 渲染相关的一些配置，比如更新属性的方法，操作 DOM 的方法</span><br><span class="line"></span><br><span class="line">const rendererOptions = &#123;</span><br><span class="line"></span><br><span class="line">  patchProp,</span><br><span class="line"></span><br><span class="line">  ...nodeOps</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let renderer</span><br><span class="line"></span><br><span class="line">// 延时创建渲染器，当用户只依赖响应式包的时候，可以通过 tree-shaking 移除核心渲染逻辑相关的代码</span><br><span class="line"></span><br><span class="line">function ensureRenderer() &#123;</span><br><span class="line"></span><br><span class="line">  return renderer || (renderer = createRenderer(rendererOptions))</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function createRenderer(options) &#123;</span><br><span class="line"></span><br><span class="line">  return baseCreateRenderer(options)</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function baseCreateRenderer(options) &#123;</span><br><span class="line"></span><br><span class="line">  function render(vnode, container) &#123;</span><br><span class="line"></span><br><span class="line">    // 组件渲染的核心逻辑</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  return &#123;</span><br><span class="line"></span><br><span class="line">    render,</span><br><span class="line"></span><br><span class="line">    createApp: createAppAPI(render)</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function createAppAPI(render) &#123;</span><br><span class="line"></span><br><span class="line">  // createApp createApp 方法接受的两个参数：根组件的对象和 prop</span><br><span class="line"></span><br><span class="line">  return function createApp(rootComponent, rootProps = null) &#123;</span><br><span class="line"></span><br><span class="line">    const app = &#123;</span><br><span class="line"></span><br><span class="line">      _component: rootComponent,</span><br><span class="line"></span><br><span class="line">      _props: rootProps,</span><br><span class="line"></span><br><span class="line">      mount(rootContainer) &#123;</span><br><span class="line"></span><br><span class="line">        // 创建根组件的 vnode</span><br><span class="line"></span><br><span class="line">        const vnode = createVNode(rootComponent, rootProps)</span><br><span class="line"></span><br><span class="line">        // 利用渲染器渲染 vnode</span><br><span class="line"></span><br><span class="line">        render(vnode, rootContainer)</span><br><span class="line"></span><br><span class="line">        app._container = rootContainer</span><br><span class="line"></span><br><span class="line">        return vnode.component.proxy</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return app</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>首先，用 <code>ensureRenderer()</code> 来延时创建渲染器(渲染器可以理解为包含平台渲染核心逻辑的 JavaScript 对象)，好处是当用户只依赖响应式包的时候，就不会创建渲染器，因此可以通过 <code>tree-shaking</code> 的方式移除核心渲染逻辑相关的代码。</p>
+</li>
+<li><p>其次，在 Vue.js 3.0 内部通过 createRenderer 创建一个渲染器，这个渲染器内部会有一个 createApp 方法，它是执行 createAppAPI 方法返回的函数，接受了 rootComponent 和 rootProps 两个参数，我们在应用层面执行 createApp(App) 方法时，会把 App 组件对象作为根组件传递给 rootComponent。这样，createApp 内部就创建了一个 app 对象，它会提供 mount 方法，这个方法是用来挂载组件的。</p>
+</li>
+</ul>
+<p>在整个 app 对象创建过程中，Vue.js 利用闭包和函数柯里（缺口缺口缺口）的技巧，很好地实现了参数保留。比如，在执行 app.mount 的时候，并不需要传入渲染器 render，这是因为在执行 createAppAPI 的时候渲染器 render 参数已经被保留下来了。</p>
+<p><strong><code>2、重写 app.mount</code></strong></p>
+<p>根据前面的分析，我们知道 <code>createApp</code> 返回的 app 对象已经拥有了 mount 方法了，但在入口函数中，接下来的逻辑却是对 app.mount 方法的重写。先思考一下，为什么要重写这个方法，而不把相关逻辑放在 app 对象的 mount 方法内部来实现呢？</p>
+<p>这是因为 Vue.js 不仅仅是为 Web 平台服务，它的目标是支持<code>跨平台渲染</code>，而 createApp 函数内部的 app.mount 方法是一个标准的可跨平台的组件渲染流程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mount(rootContainer) &#123;</span><br><span class="line">  // 创建根组件的 vnode</span><br><span class="line">  const vnode = createVNode(rootComponent, rootProps)</span><br><span class="line">  // 利用渲染器渲染 vnode</span><br><span class="line">  render(vnode, rootContainer)</span><br><span class="line">  app._container = rootContainer</span><br><span class="line">  return vnode.component.proxy</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>标准的跨平台渲染流程:<br>1、先创建 vnode，<br>2、再渲染 vnode。</p>
+<p>此外参数 rootContainer 也可以是不同类型的值：</p>
+<p>1、在 Web 平台它是一个 DOM 对象<br>2、而在其他平台（比如 Weex 和小程序）中可以是其他类型的值</p>
+<p>所以这里面的代码不应该包含任何特定平台相关的逻辑，也就是说这些代码的执行逻辑都是与平台无关的。因此我们需要在外部重写这个方法，来完善 Web 平台下的渲染逻辑。</p>
+<p>接下来，我们再来看 app.mount 重写都做了哪些事情：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">app.mount = (containerOrSelector) =&gt; &#123;</span><br><span class="line">  // 标准化容器</span><br><span class="line">  const container = normalizeContainer(containerOrSelector)</span><br><span class="line">  if (!container)</span><br><span class="line">    return</span><br><span class="line">  const component = app._component</span><br><span class="line">   // 如组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容</span><br><span class="line">  if (!isFunction(component) &amp;&amp; !component.render &amp;&amp; !component.template) &#123;</span><br><span class="line">    component.template = container.innerHTML</span><br><span class="line">  &#125;</span><br><span class="line">  // 挂载前清空容器内容</span><br><span class="line">  container.innerHTML = &apos;&apos;</span><br><span class="line">  // 真正的挂载</span><br><span class="line">  return mount(container)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>首先,通过 <code>normalizeContainer</code> 标准化容器（这里可以传字符串选择器或者 DOM 对象，但如果是字符串选择器，就需要把它转成 DOM 对象，作为最终挂载的容器）</li>
+<li>然后, 做一个 if 判断，如果组件对象没有定义 render 函数和 template 模板，则取容器的 innerHTML 作为组件模板内容</li>
+<li>接着在挂载前清空容器内容，最终再调用 app.mount 的方法走标准的组件渲染流程。</li>
+</ul>
+<p>在这里，重写的逻辑都是和 Web 平台相关的，所以要放在外部实现。此外，这么做的目的是既能让用户在使用 API 时可以更加灵活，也兼容了 Vue.js 2.x 的写法，比如 app.mount 的第一个参数就同时支持选择器字符串和 DOM 对象两种类型。</p>
+<p>从 app.mount 开始，才算真正进入组件渲染流程，那么接下来，我们就重点看一下核心渲染流程做的两件事情：<code>创建 vnode</code> 和<code>渲染 vnode</code>。</p>
+<h3 id="核心渲染流程：创建-vnode-和渲染-vnode"><a href="#核心渲染流程：创建-vnode-和渲染-vnode" class="headerlink" title="核心渲染流程：创建 vnode 和渲染 vnode"></a>核心渲染流程：创建 vnode 和渲染 vnode</h3><h5 id="1-创建-vnode"><a href="#1-创建-vnode" class="headerlink" title="1. 创建 vnode**"></a>1. 创建 vnode**</h5><p><code>什么是vnode？</code>用来描述DOM的JavaScript对象，在Vue.js中可以描述不同类型的节点，普通元素节点，组件节点等。<br><strong>普通元素节点</strong><br>举例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;button class=&quot;btn&quot; style=&quot;width:100px;height:50px&quot;&gt;click me&lt;/button&gt;</span><br><span class="line">// vnode</span><br><span class="line">const vnode = &#123;</span><br><span class="line">  type: &apos;button&apos;,</span><br><span class="line">  props: &#123; </span><br><span class="line">    &apos;class&apos;: &apos;btn&apos;,</span><br><span class="line">    style: &#123;</span><br><span class="line">      width: &apos;100px&apos;,</span><br><span class="line">      height: &apos;50px&apos;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  children: &apos;click me&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>组件节点</strong></p>
+<p>距离<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;custom-component msg=&quot;test&quot;&gt;&lt;/custom-component&gt;</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js3-0/"># Vue.js3.0</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/19/tool-vsCode/">工具-VsCode添加背景图</a>
+            
+            
+            <a class="next" rel="next" href="/2022/08/03/algorithm-951/">leeCode-951： 翻转等价二叉树： (递归、标准态遍历两种解法)-中等</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

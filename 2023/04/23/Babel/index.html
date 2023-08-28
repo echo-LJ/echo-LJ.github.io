@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Babel源码详解 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Babel源码详解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 23, 2023&nbsp;&nbsp;13:41:30
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<p><a href="https://www.babeljs.cn/docs/" target="_blank" rel="noopener">Babel</a>是一个广泛使用的 JavaScript 编译器，本质上是对<code>AST</code>的操控，从<code>js</code>到<code>js</code>的转化。</p>
+<p><strong>Babel的功能：</strong></p>
+<ul>
+<li>语法转换</li>
+<li>通过 Polyfill 方式在目标环境中添加缺失的特性 (通过 @babel/polyfill 模块)</li>
+<li>源码转换 (codemods)</li>
+</ul>
+<p><img src="https://res.cloudinary.com/dvtfhjxi4/image/upload/v1624407593/origin-of-ray/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20210623081837_ikbdn8.png" alt="image.png"></p>
+<p>l</p>
+<p><strong><code>编译器的三个阶段：</code></strong> <code>解析【Parser】 =&gt; 转换【Transformer】 =&gt; 生成【Generator】</code></p>
+<p>几个主要的步骤：</p>
+<p>1、解析生成 AST 树；<br>2、遍历 AST 树，通过匹配转换规则完成转换生成新的AST 树；<br>3、将转换后的语法树节数再次遍历，把 AST 节点重新拼接成字符串形式；<br>4、对 Babel 生成的转换结果进行美化、压缩等操作，生成最终的目标 JavaScript 代码。</p>
+<h3 id="解析【Parser】-Babel-parser"><a href="#解析【Parser】-Babel-parser" class="headerlink" title="解析【Parser】- @Babel/parser"></a>解析【Parser】- @Babel/parser</h3><p><code>Parser模块</code>是 Babel 编译器的入口模块之一， 负责将JavaScript转换解析成<code>AST</code>。</p>
+<p> Parser支持多个 JS 语言规范，包括 ES6 / ES7 / JSX / TS / Flow 等</p>
+<p><strong>1、词法分析阶段<code>Tokenizer</code>:</strong> Tokenizer通过正则表达式把代码字符串拆分成Token数组</p>
+<p>字符串形式的代码转换为令牌（tokens）流,令牌类似于AST中的节点。</p>
+<h5 id="Babel调用acorn-快速的-JavaScript-解析器-中的tokenizer函数处理js中的es6源代码，对源代码进行分词操作-生成Tokens数组。"><a href="#Babel调用acorn-快速的-JavaScript-解析器-中的tokenizer函数处理js中的es6源代码，对源代码进行分词操作-生成Tokens数组。" class="headerlink" title="Babel调用acorn (快速的 JavaScript 解析器)中的tokenizer函数处理js中的es6源代码，对源代码进行分词操作,生成Tokens数组。"></a>Babel调用<code>acorn</code> (快速的 JavaScript 解析器)中的<code>tokenizer</code>函数处理js中的es6源代码，对源代码进行分词操作,生成Tokens数组。</h5><ul>
+<li><code>acorn中tokenizer</code>函数生成的每个token具有2个属性:<br>①<code>type</code>: 当前 Token 的语法类型, 包含 <code>StringLiteral【string】</code>、<code>NumericLiteral【number】</code>、<code>BooleanLiteral【boolean】</code>、<code>Punctuator</code>、<code>Identifier【undefined】</code>、<code>Keyword</code>等<br>②<code>value</code>:当前 Token 的字面值</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">对于 const data = &quot;test&quot;; 经过分词就是下边的结果</span><br><span class="line">[</span><br><span class="line">&#123; type: &apos;Keyword&apos;, value: &apos;const&apos; &#125;,</span><br><span class="line">&#123; type: &apos;Identifier&apos;, value: &apos;data&apos; &#125;,</span><br><span class="line">&#123; type: &apos;Punctuator&apos;, value: &apos;=&apos; &#125;,</span><br><span class="line">&#123; type: &apos;String&apos;, value: &apos;&quot;test&quot;&apos; &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Babel中<code>tokenizer</code>方法基于<code>acorn 的 tokenizer() 函数</code>进行封装的生成Token数组（不包含位置信息），遍历 Token 数组，将每个 Token 的<code>位置信息</code>添加到其属性中。<br>③<code>loc</code>: Token 在源代码中的位置信息。该属性是一个包含 start 和 end 两个属性的对象，这两个属性都是包含 line 和 column 两个属性的对象。表示 Token 开始和结束的行号和列号。</li>
+</ul>
+<p><strong>2、语法分析阶段<code>parser()</code>:</strong> parser把Token数组转换为AST树</p>
+<p>把一个令牌流转化为AST的形式，同时这个阶段会把令牌中的信息转化为AST的表述结构.</p>
+<h5 id="Babel-将-acorn-返回的-tokens-序列传递给-Babel-内部的-Parser，Parser-会根据预定义的词法规则，类型和值等信息，将-Token-序列组合成一个个-AST-节点。"><a href="#Babel-将-acorn-返回的-tokens-序列传递给-Babel-内部的-Parser，Parser-会根据预定义的词法规则，类型和值等信息，将-Token-序列组合成一个个-AST-节点。" class="headerlink" title="Babel 将 acorn 返回的 tokens 序列传递给 Babel 内部的 Parser，Parser 会根据预定义的词法规则，类型和值等信息，将 Token 序列组合成一个个 AST 节点。"></a>Babel 将 acorn 返回的 tokens 序列传递给 Babel 内部的 Parser，Parser 会根据预定义的词法规则，类型和值等信息，将 Token 序列组合成一个个 AST 节点。</h5><p>Babel 会将 Token 序列转化成一个类似 AST 的数据结构。这个数据结构被称为抽象语法树。</p>
+<p>Babel 的 Parser 模块并不是直接对 Token 序列进行解析生成 AST 树，而是通过<code>递归下降分析法</code>将 Token 序列转换为抽象语法树（AST）的节点对象，然后进行语法分析、优化等一系列操作，最终生成符合目标代码规范的 AST 树.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">import &#123; Parser &#125; from &quot;@Babel/parser&quot;;</span><br><span class="line"></span><br><span class="line">function parse(tokens, options) &#123;</span><br><span class="line">  // 构建一个选项对象，包括了从 options 和 Babel 默认选项中获取的所有选项。</span><br><span class="line">  options = Object.assign(</span><br><span class="line">    &#123;</span><br><span class="line">      plugins: [],</span><br><span class="line">      allowAwaitOutsideFunction: true,</span><br><span class="line">      allowImportExportEverywhere: true,</span><br><span class="line">      allowReturnOutsideFunction: true,</span><br><span class="line">      allowSuperOutsideMethod: true,</span><br><span class="line">      sourceType: &quot;module&quot;,</span><br><span class="line">      strictMode: null,</span><br><span class="line">      ranges: false,</span><br><span class="line">      tokens: false,</span><br><span class="line">      errorRecovery: false,</span><br><span class="line">      createParenthesizedExpressions: false,</span><br><span class="line">      ranges: false,</span><br><span class="line">    &#125;,</span><br><span class="line">    options || &#123;&#125;,</span><br><span class="line">    Parser.parseDefaults</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  // 创建一个 Parser 实例对象，用于对 Token 序列进行语法分析生成 AST 树。</span><br><span class="line">  const parser = new Parser(options, undefined);</span><br><span class="line"></span><br><span class="line">  // 通过调用 Parser 实例对象的 `parse()` 方法，将 Token 序列解析成 AST 树。</span><br><span class="line">  const ast = parser.parse(tokens);</span><br><span class="line"></span><br><span class="line">  // 返回 AST 树</span><br><span class="line">  return ast;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export default parse;</span><br></pre></td></tr></table></figure>
+<p><code>递归下降分析法:</code>递归下降分析法是确定的自上而下分析法，这种分析法要求文法是LL(1)文法。 为每个非终结符编制一个递归下降分析函数，每个函数名是相应的非终结符，函数体则是根据规则右部符号串的结构和顺序编写。 子程序相互递归调用</p>
+<ul>
+<li><p>优点：递归下降分析法简单、直观，易于构造分析程序。</p>
+</li>
+<li><p>缺点：对文法要求高，必须是LL(1)文法，同时由于递归调用较多，影响分析器的效率。</p>
+</li>
+</ul>
+<h3 id="转换【Transformer】-Babel-traverse"><a href="#转换【Transformer】-Babel-traverse" class="headerlink" title="转换【Transformer】- @Babel/traverse"></a>转换【Transformer】- @Babel/traverse</h3><p>Babel的Transformer模块负责将AST转换为另一个AST。Transformer组件包含了一组插件，可以将AST节点的类型进行变换（Transform）生成新的AST语法书。每个插件都有一个visitor对象，用于描述需要转换的节点以及转换处理函数。</p>
+<p>例如，当遇到某个节点的时候，Transformer会查询所有的Plugins中注册的Visitor，选择与之匹配的Transformer进行转换处理，最终输出一个新的 AST。这个过程构成了AST的遍历过程。</p>
+<p><code>@Babel/traverse</code>示例源码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">const babylon = require(&quot;@Babel/parser&quot;);</span><br><span class="line">const traverse = require(&quot;@Babel/traverse&quot;).default;</span><br><span class="line">let ast = babylon.parse(code, &#123; sourceType: &apos;module&apos;, plugins: [&apos;jsx&apos;] &#125;);</span><br><span class="line">const visitor = &#123;</span><br><span class="line">  FunctionDeclaration: function(path) &#123;</span><br><span class="line">    // 操作节点</span><br><span class="line">  &#125;,</span><br><span class="line">  Identifier: function(path) &#123;</span><br><span class="line">    // 操作节点</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">traverse(ast, visitor)</span><br><span class="line"></span><br><span class="line">console.dir(ast, &#123;depth: null&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><code>traverse 接收俩个参数:</code></p>
+<ul>
+<li>AST: @Babel/parser生成的AST语法树.</li>
+<li>visitor: 是一个对象，包含了多个 visitor 方法，用于定义需要遍历的节点类型以及对应转换处理函数。</li>
+</ul>
+<p>visitor包含了进入节点的方法（enter）、 操作节点的方法、退出节点的方法（exit），在遍历 AST 时，如果遇到了对应ast的类型节点，便会执行 visitor 对应的方法.</p>
+<p><code>visitor方法中的path参数:</code></p>
+<p>path 是 NodePath 类型的实例，它是一个用于管理 AST 节点的路径对象。NodePath 对象是对 AST 节点的一种包装，它包含了节点自身的信息，以及由根节点到当前节点的路径信息，可以方便地对 AST 树进行分析、修改和重构。实现ast节点之间的相互关联。</p>
+<p><strong>基本的 NodePath 包含以下属性和方法</strong></p>
+<ul>
+<li><code>node</code>：表示当前节点本身的信息，通常是一个 JavaScript 对象。</li>
+<li><code>parent</code>：表示当前节点的父节点。</li>
+<li><code>parentPath</code>：表示当前节点的父节点路径。</li>
+<li><code>key</code>：表示当前节点在父节点中的位置，通常是一个数字或字符串。</li>
+<li><code>listKey</code>：表示当前节点在父节点的集合中的位置，通常是一个数字或字符串。</li>
+<li><code>type</code>：表示当前节点的类型，通常是一个字符串。</li>
+<li><code>scope</code>：表示当前节点所在的作用域。</li>
+<li><code>context</code>：表示当前节点的上下文。</li>
+<li><code>setData(data)</code>：设置当前路径的数据。</li>
+<li><code>getData()</code>：获取当前路径的数据。</li>
+<li><code>get(key: string, context?: string)</code>: NodePath：获取当前路径下名为 key 的子节点路径。</li>
+<li><code>getSibling(key: string)</code>: NodePath：获取当前路径下同级的名为 key 的节点路径。</li>
+<li><code>insertBefore(nodes: Node | Array&lt;Node&gt;)</code>: void：在当前节点之前插入一个或多个节点。</li>
+<li><code>insertAfter(nodes: Node | Array&lt;Node&gt;)</code>: void：在当前节点之后插入一个或多个节点。</li>
+<li><code>replaceWith(node: Node)</code>: void：用传入的节点替换掉当前节点。</li>
+<li><code>remove()</code>: void：从父节点中删除当前节点。</li>
+</ul>
+<p><strong>常用的核心插件包括:</strong></p>
+<ul>
+<li><code>@Babel/plugin-transform-arrow-functions</code>：将 ES6 箭头函数转换成普通函数表达式。</li>
+<li><code>@Babel/plugin-transform-block-scoping</code>：将 ES6 let/const 块级作用域语法转换成 var 语句的混合形式。</li>
+<li><p><code>@Babel/plugin-transform-classes</code>：将 ES6 类语法转换成 ES5 构造函数和原型方法的形式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// es6</span><br><span class="line">class Point &#123;</span><br><span class="line">  constructor(x, y) &#123;</span><br><span class="line">    this.x = x;</span><br><span class="line">    this.y = y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  toString() &#123;</span><br><span class="line">    return `($&#123;this.x&#125;, $&#123;this.y&#125;)`;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">//es5</span><br><span class="line"></span><br><span class="line">function Point(x, y) &#123;</span><br><span class="line">  this.x = x;</span><br><span class="line">  this.y = y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Point.prototype.toString = function() &#123;</span><br><span class="line">  return &quot;(&quot; + this.x + &quot;, &quot; + this.y + &quot;)&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>@Babel/plugin-transform-destructuring</code>：将 ES6 解构语法转换成普通的赋值语句。</p>
+</li>
+<li><code>@Babel/plugin-transform-for-of</code>：将 ES6 for…of 循环语法转换成普通的 for 循环语法。</li>
+<li><p><code>@Babel/plugin-transform-modules-commonjs</code>：将 ES6 模块语法转换成 CommonJS 模块的形式。</p>
+</li>
+<li><p><code>@Babel/plugin-transform-object-assign</code>：将 Object.assign() 方法转换成其他实现方式。</p>
+</li>
+<li><code>@Babel/plugin-transform-parameters</code>：将 ES6 函数参数语法转换成普通的函数参数的形式。</li>
+<li><p><code>@Babel/plugin-transform-spread</code>：将 ES6 扩展运算符语法转换成普通的函数参数的形式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// es6</span><br><span class="line">const arr1 = [1, 2, 3];</span><br><span class="line">const arr2 = [4, 5, 6];</span><br><span class="line">const mergedArr = [...arr1, ...arr2];</span><br><span class="line">console.log(mergedArr); // [1, 2, 3, 4, 5, 6]</span><br><span class="line">// es5</span><br><span class="line">var arr1 = [1, 2, 3];</span><br><span class="line">var arr2 = [4, 5, 6];</span><br><span class="line">var mergedArr = [].concat(arr1, arr2);</span><br><span class="line">console.log(mergedArr); // [1, 2, 3, 4, 5, 6]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>@Babel/plugin-transform-template-literals</code>：将 ES6 模板字符串语法转换成字符串拼接的形式。</p>
+</li>
+</ul>
+<h3 id="生成【Generator】-babel-generator"><a href="#生成【Generator】-babel-generator" class="headerlink" title="生成【Generator】-@babel/generator"></a>生成【Generator】-@babel/generator</h3><p>Generator通过将 AST 转化为源代码，并生成 source-map对象。</p>
+<p><code>@babel/generator</code> 是 Babel 转换过程的最后一步，它会接收处理后的 AST 树，遍历根据 AST 节点类型和 Visitor 列表定义的代码生成器函数，生成 JavaScript 代码字符串，并在生成的代码字符串中添加分号或者空格等细节信息，并使用 source-map 模块添加源代码映射信息</p>
+<p><strong>@babel/generator</strong> 模块源码的基本逻辑:x</p>
+<ul>
+<li>初始化 Visitor 列表: </li>
+</ul>
+<p>@babel/generator 会初始化一个 Visitor 列表，包含了所有可能出现的 AST 节点类型以及对应的生成器函数，每个生成器函数会接收两个参数：节点对象和 State 对象，使用这两个参数<code>生成对应的 JavaScript 代码字符串</code>。</p>
+<ul>
+<li><p>定义 State 对象:<br>State 对象是一个状态对象，用于在<code>遍历 AST 树时存储一些上下文信息，帮助生成器函数生成 JavaScript 代码字符串</code>。它包含了 write 方法、newline 方法、indent 方法等方法，用于控制输出的代码格式、缩进和换行等。</p>
+</li>
+<li><p>遍历 AST 树<br>当 @babel/generator 被调用时，它会接收 AST 树对象作为参数，开始遍历 AST 树，并对每个节点调用生成器函数，生成对应的 JavaScript 代码字符串。在输出代码字符串时，@babel/generator 依据 AST 节点类型和 Visitor 列表中预定义的处理函数，将节点转换为对应的代码字符串，并将其添加到 State 对象中</p>
+</li>
+<li><p>处理自动分号插入问题<br>生成过程中，@babel/generator 还会判断分号的插入问题。默认情况下，JavaScript 引擎会自动检测代码行尾的分号是否存在，如果不存在就会自动插入。不过这个过程在某些场景下会出现不可预测的行为。为了解决这种问题，@babel/generator 会判断节点是否要插入分号，并在生成 JavaScript 代码字符串时添加对应的分号。</p>
+</li>
+<li><p>处理源代码映射，以支持检查和调试。<br>@babel/generator 采用源代码映射的方式将 JavaScript 代码字符串对应到源代码的位置。这个过程主要依赖于<code>source-map</code> 模块。在生成 JavaScript 代码字符串和对应的 source map 后，@babel/generator 返回一个对象，包含了代码字符串和对应的 source map 对象。</p>
+</li>
+</ul>
+<h3 id="什么是Polyfill"><a href="#什么是Polyfill" class="headerlink" title="什么是Polyfill?"></a>什么是Polyfill?</h3><p><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Polyfill" target="_blank" rel="noopener">Polyfill</a>是一个js库，主要抚平不同浏览器之间对js实现的差异,实现浏览器并不支持的原生API的代码.</p>
+<h3 id="polyfill和babel的区别"><a href="#polyfill和babel的区别" class="headerlink" title="polyfill和babel的区别"></a>polyfill和babel的区别</h3><p>Babel 是一个 JavaScript 编译器，能够将新版本的 js语法编译成浏览器支持的旧版本js语法。<br>Babel默认只转换新的JavaScript语法，而不转换新的API.</p>
+<p>而为了确保 Babel 转译的代码在旧版浏览器中仍旧正常运行，就需要使用 Polyfill 来填充这些缺失的API特性。这意味着 Polyfill 和 Babel 通常一起使用，让开发者能够使用新版 JavaScript 代码，而又不必担心它在旧版浏览器中无法正常运行。</p>
+<p>举例： Babel转换了ES6的箭头函数句法，但对于Array.of并没有转换，因为Array.of是ES6的API.</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接:</p>
+<ul>
+<li><a href="https://sunra.top/2021/06/22/Babel-1/" target="_blank" rel="noopener">深入Babel原理系列（三）Tokenizer</a></li>
+<li><a href="https://sunra.top/2021/06/22/Babel-1/" target="_blank" rel="noopener">在线AST转换器</a></li>
+<li><a href="https://juejin.cn/post/7142158641628446733#heading-4" target="_blank" rel="noopener">babel 的编译过程</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/tool/"># tool</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/04/24/css-loader/">style-loader、css-loader、postcss-loader、file-loader、 url-loader</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/23/browser1/">浏览器兼容性</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

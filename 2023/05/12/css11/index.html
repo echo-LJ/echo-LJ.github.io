@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>谈谈对前端CSS工程化的理解 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">谈谈对前端CSS工程化的理解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: May 12, 2023&nbsp;&nbsp;10:36:37
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h3 id="CSS-工程化是为了解决以下问题："><a href="#CSS-工程化是为了解决以下问题：" class="headerlink" title="CSS 工程化是为了解决以下问题："></a>CSS 工程化是为了解决以下问题：</h3><ul>
+<li>宏观设计：CSS 代码如何组织、如何拆分、模块结构怎样设计？</li>
+<li>编码优化：怎样写出更好的 CSS？</li>
+<li>构建：如何处理我的 CSS，才能让它的打包结果最优？</li>
+<li>可维护性：代码写完了，如何最小化成本维护后续的变更？如何确保任何一个同事都能轻松接手？</li>
+</ul>
+<p><strong>以下三个方向都是时下比较流行的、普适性非常好的 CSS 工程化实践：</strong></p>
+<ul>
+<li>预处理器：Less、 Sass 等；</li>
+<li>重要的工程化插件： <a href="https://echo-lj.github.io/2023/04/24/css-loader/" target="_blank" rel="noopener">PostCss</a></li>
+<li>Webpack loader 等 。</li>
+</ul>
+<p><strong>基于这三个方向，可以衍生出一些具有典型意义的子问题，这里我们逐个来看：</strong></p>
+<h3 id="预处理器：为什么要用预处理器？它的出现是为了解决什么问题？"><a href="#预处理器：为什么要用预处理器？它的出现是为了解决什么问题？" class="headerlink" title="预处理器：为什么要用预处理器？它的出现是为了解决什么问题？"></a>预处理器：为什么要用预处理器？它的出现是为了解决什么问题？</h3><p>预处理器，其实就是 CSS 世界的“轮子”。预处理器支持我们写一种类似 CSS、但实际并不是 CSS 的语言，然后把它编译成 CSS 代码：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-8aec39469d2dc4f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-05-12 上午10.42.57.png"></p>
+<p><strong>随着前端业务复杂度的提高，前端工程中对 CSS 提出了以下的诉求：</strong></p>
+<ul>
+<li>宏观设计上：我们希望能优化 CSS 文件的目录结构，对现有的 CSS 文件实现复用；</li>
+<li>编码优化上：我们希望能写出结构清晰、简明易懂的 CSS，需要它具有一目了然的嵌套层级关系，而不是无差别的一铺到底写法；我们希望它具有变量特征、计算能力、循环能力等等更强的可编程性，这样我们可以少写一些无用的代码；</li>
+<li>可维护性上：更强的可编程性意味着更优质的代码结构，实现复用意味着更简单的目录结构和更强的拓展能力，这两点如果能做到，自然会带来更强的可维护性。</li>
+</ul>
+<p>这三点是传统 CSS 所做不到的，也正是预处理器所解决掉的问题。</p>
+<p><strong><a href="https://echo-lj.github.io/2023/05/22/css12/" target="_blank" rel="noopener">预处理器</a>普遍会具备这样的特性：</strong></p>
+<ul>
+<li>嵌套代码的能力，通过嵌套来反映不同 css 属性之间的层级关系 ；</li>
+<li>支持定义 css 变量；</li>
+<li>提供计算函数；</li>
+<li>允许对代码片段进行 extend 和 mixin；</li>
+<li>支持循环语句的使用；</li>
+<li>支持将 CSS 文件模块化，实现复用。</li>
+</ul>
+<h3 id="PostCss：PostCss-是如何工作的？我们在什么场景下会使用-PostCss？"><a href="#PostCss：PostCss-是如何工作的？我们在什么场景下会使用-PostCss？" class="headerlink" title="PostCss：PostCss 是如何工作的？我们在什么场景下会使用 PostCss？"></a>PostCss：PostCss 是如何工作的？我们在什么场景下会使用 PostCss？</h3><p><img src="https://upload-images.jianshu.io/upload_images/11846892-a802a4feceb6530e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2023-05-12 上午10.52.55.png"></p>
+<p>它和预处理器的不同就在于，预处理器处理的是 类CSS，而 PostCss 处理的就是 CSS 本身。Babel 可以将高版本的 JS 代码转换为低版本的 JS 代码。<strong>PostCss 做的是类似的事情：</strong><code>它可以编译尚未被浏览器广泛支持的先进的 CSS 语法，还可以自动为一些需要额外兼容的语法增加前缀</code>。更强的是，由于 PostCss 有着强大的插件机制，支持各种各样的扩展，极大地强化了 CSS 的能力。</p>
+<p><strong>PostCss 在业务中的使用场景非常多：</strong></p>
+<ul>
+<li>提高 CSS 代码的可读性：PostCss 其实可以做类似预处理器能做的工作；</li>
+<li>当我们的 CSS 代码需要适配低版本浏览器时，PostCss 的 Autoprefixer 插件可以帮助我们自动增加浏览器前缀；</li>
+<li>允许我们编写面向未来的 CSS：PostCss 能够帮助我们编译 CSS next 代码；</li>
+</ul>
+<p>可参考：<a href="https://echo-lj.github.io/2023/04/24/css-loader/" target="_blank" rel="noopener">style-loader、css-loader、postcss-loader、file-loader、 url-loader</a></p>
+<h3 id="Webpack-能处理-CSS-吗？如何实现？"><a href="#Webpack-能处理-CSS-吗？如何实现？" class="headerlink" title="Webpack 能处理 CSS 吗？如何实现？"></a>Webpack 能处理 CSS 吗？如何实现？</h3><p>Webpack 在裸奔的状态下，是不能处理 CSS 的，Webpack 本身是一个面向 JavaScript 且只能处理 JavaScript 代码的模块化打包工具；<br>Webpack 在 loader 的辅助下，是可以处理 CSS 的。<br>如何用 Webpack 实现对 CSS 的处理：</p>
+<p>Webpack 中操作 CSS 需要使用的两个关键的 loader：<code>css-loader</code> 和 <code>style-loader</code></p>
+<blockquote>
+<p>注意，答出“用什么”有时候可能还不够，面试官会怀疑你是不是在背答案，所以你还需要了解每个 loader 都做了什么事情：<br><code>css-loader</code>：导入 CSS 模块，对 CSS 代码进行编译处理；<br><code>style-loader</code>：创建style标签，把 CSS 内容写入标签。<br>⚠️：在实际使用中，css-loader 的执行顺序一定要安排在 style-loader 的前面。因为只有完成了编译过程，才可以对 css 代码进行插入；若提前插入了未编译的代码，那么 webpack 是无法理解这坨东西的，它会无情报错。</p>
+</blockquote>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/CSS/"># CSS</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/05/17/es6-1/">说说JavaScript中的数据类型？存储上的差别？</a>
+            
+            
+            <a class="next" rel="next" href="/2023/05/10/css10/">文档流</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

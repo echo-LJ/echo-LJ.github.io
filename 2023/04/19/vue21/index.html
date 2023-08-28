@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Vue 的生命周期的理解 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue 的生命周期的理解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 19, 2023&nbsp;&nbsp;10:02:58
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+
+
+
+
+
+<p><strong>Vue2</strong><br><img src="https://img2018.cnblogs.com/blog/1475079/201810/1475079-20181015102951341-1694919323.png" alt="vue.png"></p>
+<p><strong>Vue3</strong><br><img src="https://upload-images.jianshu.io/upload_images/11846892-faa34d5082e8ed41.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="lifecycle.16e4c08e.png"></p>
+<h3 id="回答思路"><a href="#回答思路" class="headerlink" title="回答思路"></a>回答思路</h3><p>1、给出概念<br>2、列举生命周期各阶段<br>3、阐述整体流程<br>4、结合实践<br>5、扩展：Vue3的变化</p>
+<p>1.每个Vue组件实例被创建后都会经过一系列初始化步骤，比如，它需要<code>数据观测</code>，<code>模板编译</code>，<code>挂载实例到DOM</code>上，以及<code>数据变化时更新DOM</code>。这个过程中会运行叫做生命周期钩子的函数，以便用户在特定阶段有机会添加他们自己的代码。</p>
+<p>2.Vue生命周期总共可以分为8个阶段：<strong>创建前后, 载入前后, 更新前后, 销毁前后</strong>，以及一些特殊场景的生命周期。vue3中新增了三个用于调试和服务端渲染场景。</p>
+<p><strong>3通过vue3的生命周期图解，阐述整体流程：</strong><br>1、通过Renderer渲染器去创建组件–调用(Compostion API)的setup<br>2、创建完成之后–判断是否有预编译模版-没有：在运行时进行实时编译模版，得到Render函数。</p>
+<p>4、结合实践，描述table中的可执行</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>vue2</th>
+<th>vue3</th>
+<th>description</th>
+<th>function</th>
+<th>可执行</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>创建阶段</td>
+<td>beforeCreate</td>
+<td>beforeCreate</td>
+<td>组件实例被创建之初</td>
+<td>用于插件开发执行初始化任务</td>
+<td>例如写一个router插件，需要向app实例中注入$router、$store等全局变量、全局属性。｜</td>
+</tr>
+<tr>
+<td>创建阶段</td>
+<td>created</td>
+<td>created</td>
+<td>组件实例已经被完全创建</td>
+<td>组件初始化完毕，可以访问各种数据、属性和方法都已完善</td>
+<td>｜</td>
+</tr>
+<tr>
+<td>创建阶段</td>
+<td>beforeMount</td>
+<td>beforeMount</td>
+<td><code>组件挂载之前</code>（最后可以修改虚拟DOM的生命周期钩子函数，需谨慎操作，避免对组件渲染性能造成不利的影响）</td>
+<td><code>组件中的 DOM 操作都在虚拟 DOM 内完成，但尚未将其插入到真正的页面上</code>。</td>
+<td>在这个钩子函数中，我们可以对虚拟 DOM 进行一些操作，但不可以访问到实例的 <code>$el</code>属性。可以通过<code>vm.$el</code>获取虚拟DOM实例，我们可以进行一些比较耗时的操作（通过 axios 等工具发送请求，获取需要渲染到组件中的数据，完成一些基础但是必要的初始化工作），但是需要注意对组件渲染性能的影响。｜</td>
+</tr>
+<tr>
+<td>创建阶段</td>
+<td>mounted</td>
+<td>mounted</td>
+<td>组件挂载到实例上去之后</td>
+<td><code>DOM已创建，可用于获取访问数据和dom元素；访问子组件等</code></td>
+<td>(保证操作dom的操作开销足够小，在 mounted 阶段完成后，Vue 会采用异步更新机制，如果在此生命钩子中进行的操作过于耗时，则可能会造成渲染性能的问题，甚至会使浏览器出现假死状态。) ｜</td>
+</tr>
+<tr>
+<td>更新阶段</td>
+<td>beforeUpdate</td>
+<td>beforeUpdate</td>
+<td><code>组件数据更新之前</code>(不会等待异步操作)</td>
+<td><code>此时Data已经更新，view层还未更新</code>，可用于获取更新前各种状态（清理旧的监听器、移除无用的信息、更新组件数据）可以访问到<code>更新前后的数据</code>,不可以修改组件的数据，否则会进入无限循环（可以使用 <code>$nextTick</code> 方法来进行延迟处理）</td>
+<td>当<code>数据状态更新</code>的时候，Vue 会调用以下的流程：1、触发数据响应式更新 2、重新渲染组件视图 3、触发 beforeUpdate 钩子函数 4、渲染更新到页面 5、触发 updated 钩子函数 ｜</td>
+</tr>
+<tr>
+<td>更新阶段</td>
+<td>updated</td>
+<td>updated</td>
+<td>组件数据更新之后</td>
+<td>完成view层的更新，更新后，所有状态已是最新（可以在此操作更新后的 DOM 界面，例如自动滚动到底部等）</td>
+<td><code>执行 Vue 组件数据响应式更新和 view 层更新</code>流程：1、接收更新后的数据，Vue 会将数据转换为虚拟 DOM。2、Vue 会将虚拟 DOM 与上一次渲染的虚拟 DOM 进行比较，找出需要更新的地方。3、根据所找出的需要更新的地方，进行必要的更新操作，包括添加、删除、更新 虚拟DOM 元素等等。4、在更新操作完成之后，Vue 会调用 beforeUpdate 钩子函数。5、Vue 将更新后的 DOM 渲染到页面上，并调用 updated 钩子函数。</td>
+</tr>
+<tr>
+<td>销毁阶段</td>
+<td>beforeDestroy</td>
+<td>beforeUnmount</td>
+<td>组件实例销毁之前</td>
+<td>可用于一些定时器或订阅的取消、以避免内存泄漏的问题</td>
+<td>在 钩子函数中，<code>不能通过访问 this 来访问到组件实例</code>，因为在组件实例被销毁后，this 将不再指向组件实例。如果需要在这个钩子函数中访问组件实例，可以通过在函数内部保存一个指向组件实例的引用来实现，并且不能阻止组件实例被销毁，否则会<code>内存泄漏</code></td>
+</tr>
+<tr>
+<td>销毁阶段</td>
+<td>destroyed</td>
+<td><strong>unmounted</strong></td>
+<td>组件实例销毁之后</td>
+<td>可清理它与其它实例的连接，解绑它的全部指令及事件监听器</td>
+<td>路由切换时，如果从一个组件切换到另一个组件，那么当前组件的 <code>destroyed 钩子函数</code>可能不会被调用(使用 $route 对象来监视路由的变化，并在路由变化时手动清理组件)</td>
+</tr>
+<tr>
+<td></td>
+<td>acivated</td>
+<td>onActivated</td>
+<td>keep-alive缓存的组件激活时</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>deactivated</td>
+<td>onDeactivated</td>
+<td>keep-alive缓存的组件停用时</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>errorCaptured</td>
+<td>errorCaptured</td>
+<td>捕获来自子孙组件的错误时</td>
+<td>钩子函数接收的两个参数分别是错误和组件实例</td>
+<td>钩子函数并不会捕获 JavaScript 自身的错误，例如语法错误或者浏览器本身引起的错误。它只能捕获由组件内部抛出的错误，例如使用 throw 关键字抛出的错误、Promise.reject 返回的错误等等。如果需要捕获 JavaScript 自身的错误，可以使用 window.onerror 全局错误处理函数。</td>
+</tr>
+<tr>
+<td></td>
+<td>-</td>
+<td><strong>renderTracked</strong></td>
+<td>调试钩子，响应式依赖被收集时</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>-</td>
+<td><strong>renderTriggered</strong></td>
+<td>调试钩子，响应式依赖被触发时</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>-</td>
+<td><strong>serverPrefetch</strong></td>
+<td>ssr only，组件实例在服务器上被渲染前调用</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="父子组件生命周期执行顺序"><a href="#父子组件生命周期执行顺序" class="headerlink" title="父子组件生命周期执行顺序"></a>父子组件生命周期执行顺序</h3><ul>
+<li><p>Vue 3 中父子组件的生命周期函数的执行顺序如下：<br>1、父组件 beforeCreate<br>2、父组件 created<br>3、父组件 beforeMount<br>4、子组件 beforeCreate<br>5、子组件 created<br>6、子组件 beforeMount<br>7、子组件 mounted<br>8、父组件 mounted</p>
+</li>
+<li><p>当组件更新阶段时，组件的生命周期函数执行顺序如下：<br>1、父组件 beforeUpdate<br>2、子组件 beforeUpdate<br>3、子组件 updated<br>4、父组件 updated</p>
+</li>
+<li><p>当组件被销毁时，组件的生命周期函数执行顺序如下：<br>1、子组件 beforeUnmount<br>2、子组件 unmounted<br>3、父组件 beforeUnmount<br>4、父组件 unmounted</p>
+</li>
+</ul>
+<h3 id="使用-keep-alive-缓存组件，父子组件生命周期执行顺序"><a href="#使用-keep-alive-缓存组件，父子组件生命周期执行顺序" class="headerlink" title="使用 keep-alive 缓存组件，父子组件生命周期执行顺序"></a>使用 keep-alive 缓存组件，父子组件生命周期执行顺序</h3><p>1、父组件 beforeCreate<br>2、父组件 created<br>3、父组件 beforeMount<br>4、子组件 beforeCreate<br>5、子组件 created<br>6、子组件 beforeMount<br>7、子组件 mounted<br>8、父组件 mounted<br>9、父组件 deactivated<br>10、子组件 deactivated<br>11、子组件 activated<br>12、父组件 activated</p>
+<h3 id="setup中为什么没有beforeCreate-和-created"><a href="#setup中为什么没有beforeCreate-和-created" class="headerlink" title="setup中为什么没有beforeCreate 和 created?"></a>setup中为什么没有beforeCreate 和 created?</h3><p>由于setup执行比较早、组件实例已经创建了，所以没有必要beforeCreate 和 created。</p>
+<p>在[vue3在线源码的生命周期派发时刻](<a href="https://github1s.com/vuejs/core/blob/HEAD/packages/runtime-core/src/componentOptions.ts#L610）中可以看到`applyOptions`方法是在setup函数完整处理完成之后才会触发的，而`applyOptions`中所调用的所有钩子函数都晚于setup。" target="_blank" rel="noopener">https://github1s.com/vuejs/core/blob/HEAD/packages/runtime-core/src/componentOptions.ts#L610）中可以看到`applyOptions`方法是在setup函数完整处理完成之后才会触发的，而`applyOptions`中所调用的所有钩子函数都晚于setup。</a></p>
+<p>在<a href="https://github1s.com/vuejs/vue/blob/HEAD/src/core/instance/init.ts" target="_blank" rel="noopener">vue2在线源码的生命周期派发时刻</a>中 <code>newVue</code>函数内部可以执行一些beforeCreate之前的处理逻辑，</p>
+<ul>
+<li><code>initLifeCycle:</code> 组件本身的生命周期初始化：parent、children、root的初始化</li>
+<li><code>initEvents:</code>自定义事件的监听</li>
+<li><code>initRender</code> 挂载渲染函数等</li>
+<li><code>callback(beforeCreated)</code>: 调用beforeCreated</li>
+<li><code>initInjections</code> ： 初始化组件的props、data、等状态信息</li>
+<li><code>initState(vm)</code></li>
+<li><code>initProvide(vm)</code> // resolve provide after data/props</li>
+<li><code>callHook(vm, &#39;created&#39;)</code>: 调用created钩子</li>
+</ul>
+<h3 id="路由切换时组件的-destroyed-钩子函数不会被调用"><a href="#路由切换时组件的-destroyed-钩子函数不会被调用" class="headerlink" title="路由切换时组件的 destroyed 钩子函数不会被调用?"></a>路由切换时组件的 destroyed 钩子函数不会被调用?</h3><p>可能不会被调用,原因如下：</p>
+<ul>
+<li>1、异步操作导致的组件销毁延时</li>
+</ul>
+<p>在组件销毁的过程中，如果组件实例上存在一些<code>异步操作</code>（例如定时器、Promise 等等），这些异步操作可能会导致组件的销毁延时。如果在组件销毁之前，异步操作还未完成，那么组件的销毁流程将被打断，从而导致 <code>destroyed</code> 钩子函数不被调用。</p>
+<ul>
+<li>2、懒加载组件的情况</li>
+</ul>
+<p>在使用懒加载（也称为按需加载）方式加载组件时，组件实例并不会在组件被切换后立即被销毁，而是会等待一段时间，直到没有其它组件依赖于它才被销毁。在这种情况下，组件的 <code>destroyed</code> 钩子函数也可能不会被调用。</p>
+<p>为了避免由于未执行 <code>destroyed</code> 钩子函数而导致的内存泄漏等问题，可以在组件中手动监听路由的变化，并在路由变化时手动清理组件，在 <code>beforeUnmount</code>钩子函数中执行清理工作以确保在组件卸载之前清理组件。</p>
+<h3 id="新生命周期钩子：serverPrefetch是什么？"><a href="#新生命周期钩子：serverPrefetch是什么？" class="headerlink" title="新生命周期钩子：serverPrefetch是什么？"></a>新生命周期钩子：serverPrefetch是什么？</h3><p><code>serverPrefetch</code> 是 Vue 3 中新增的一种异步数据预取技术，用于在组件渲染之前，提前获取组件所需的异步数据，以便在渲染时直接使用，从而提升页面加载速度和用户体验。</p>
+<p>在 Vue 3 中，通过在组件内部定义 serverPrefetch 静态方法，可以在<code>服务器端渲染时</code>、<code>客户端路由导航时</code>或<code>预渲染时调用</code>该方法，预取组件所需的异步数据。在执行 serverPrefetch 方法时，可以返回一个 Promise 对象，该 Promise 对象用于异步获取组件所需的数据，并在完成后将其返回。在组件渲染时，可以通过 <code>ssrContext</code> 对象访问到预取的数据，然后渲染出组件所需要的 HTML 代码。</p>
+<p>使用 serverPrefetch 技术，可以充分利用服务器端的异步数据获取能力，提前获取组件所需的数据，从而降低客户端渲染的延迟和带宽占用，提高用户体验和搜索引擎优化效果。</p>
+<p>⚠️：<code>serverPrefetch</code> 技术需要与服务器端渲染（SSR）、客户端路由导航等技术密切配合，才能实现最佳效果。同时，在使用 serverPrefetch 时需要注意数据的格式、缓存策略等问题，以便避免数据重复请求、数据不一致等问题。</p>
+<p>这里我们贴出一段官方例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- Item.vue --&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div v-if=&quot;item&quot;&gt;&#123;&#123; item.title &#125;&#125;&lt;/div&gt;</span><br><span class="line">  &lt;div v-else&gt;...&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  computed: &#123;</span><br><span class="line">    item () &#123;</span><br><span class="line">      return this.$store.state.items[this.$route.params.id]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  serverPrefetch () &#123;</span><br><span class="line">    return this.fetchItem()</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line">    if (!this.item) &#123;</span><br><span class="line">      this.fetchItem()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    fetchItem () &#123;</span><br><span class="line">      // return the Promise from the action</span><br><span class="line">      return this.$store.dispatch(&apos;fetchItem&apos;, this.$route.params.id)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="ssrContext的使用方法"><a href="#ssrContext的使用方法" class="headerlink" title="ssrContext的使用方法"></a>ssrContext的使用方法</h3><p>在 Vue 3 中，<code>ssrContext</code>变量是在服务器端渲染（SSR）时使用的<code>上下文对象</code>，在组件渲染过程中用于传递一些额外的数据或方法。</p>
+<p><code>ssrContext</code> 变量是在渲染过程中被注入到组件上下文中的一个特殊对象，它包括了一些与服务器渲染相关的属性和方法。在组件中，可以通过 <code>this.$ssrContext</code> 访问到当前上下文的 ssrContext 对象。</p>
+<p>在服务器渲染过程中，可以在创建 Vue 应用程序实例时，将其作为参数传递给 <code>createApp</code> 方法，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const app = createApp(&#123;</span><br><span class="line">  // 应用程序组件</span><br><span class="line">  /* ... */</span><br><span class="line">&#125;).provide(&apos;ssrContext&apos;, ssrContext);</span><br><span class="line"></span><br><span class="line">app.mount(&apos;#app&apos;);</span><br></pre></td></tr></table></figure>
+<p>在组件的 <code>serverPrefetch</code> 钩子函数中，可以通过 <code>this.$ssrContext</code> 访问到 <code>ssrContext</code> 对象，从而获取服务器端渲染过程中预取的数据。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  serverPrefetch() &#123;</span><br><span class="line">    const &#123; ssrContext &#125; = this.$ssrContext;</span><br><span class="line">    return fetch(&apos;/api/data&apos;).then((res) =&gt; &#123;</span><br><span class="line">      ssrContext.data = res.data;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，<code>serverPrefetch</code> 函数通过 fetch 方法异步获取了 <code>/api/data</code> 接口的数据，并将其存储到 <code>ssrContext</code> 对象中的 data 属性中。在组件渲染过程中，可以通过访问 <code>ssrContext 对象</code>来获取预取的数据，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;&#123;&#123; $ssrContext.data &#125;&#125;&lt;/p&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，<code>$ssrContext</code> 对象的 data 属性就是在 <code>serverPrefetch</code> 中存储到 <code>ssrContext 对象</code>中的数据。</p>
+<p>综上所述，ssrContext 变量是 Vue 3 中在服务器端渲染过程中使用的上下文对象，在组件渲染过程中用于传递一些额外的数据或方法。通过在创建 Vue 应用程序实例时传递给 createApp 方法，可以将其注入到组件上下文中，从而在组件中访问 ssrContext 对象，实现服务器端渲染过程中数据的传递和获取。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js/"># Vue.js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/04/19/vue22/">Vue 的keep-alive</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/18/vue20/">v-for和v-if</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

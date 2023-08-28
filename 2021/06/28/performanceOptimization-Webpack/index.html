@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>前端性能优化-webpack | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">前端性能优化-webpack</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: June 28, 2021&nbsp;&nbsp;16:10:08
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><meta name="referrer" content="no-referrer"></p>
+<h2 id="一、vueCli-查看打包后文件的大小占比"><a href="#一、vueCli-查看打包后文件的大小占比" class="headerlink" title="一、vueCli 查看打包后文件的大小占比"></a>一、vueCli 查看打包后文件的大小占比</h2><hr>
+<p>⚠️vue-cli2 使用 <code>webpack-bundle-analyzer</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 用vue-cli2 构建的项目 中里已经集成了 </span><br><span class="line">使用npm run build --report 命令即可</span><br></pre></td></tr></table></figure></p>
+<p>⚠️下面适用于：vue-cli3</p>
+<p><strong><code>1.1 安装依赖</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install webpack-bundle-analyzer --save-dev</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>1.2 配置vue.config.js</code></strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">chainWebpack: config =&gt; &#123;</span><br><span class="line">    // 查看打包文件体积大小</span><br><span class="line">    config</span><br><span class="line">      .plugin(&apos;webpack-bundle-analyzer&apos;)</span><br><span class="line">      .use(require(&apos;webpack-bundle-analyzer&apos;).BundleAnalyzerPlugin,[</span><br><span class="line">          &#123;</span><br><span class="line">            analyzerMode: &apos;server&apos;   </span><br><span class="line">          &#125;</span><br><span class="line">      ])</span><br><span class="line">  &#125;</span><br><span class="line">  /**</span><br><span class="line">  analyzerMode?: &apos;server&apos; | &apos;static&apos; | &apos;json&apos; | &apos;disabled&apos;;</span><br><span class="line">         * Can be &quot;server&quot;, &quot;static&quot; or &quot;disabled&quot;.</span><br><span class="line">         * Defaults to &quot;server&quot;.</span><br><span class="line">         * In &quot;server&quot; mode analyzer will start HTTP server to show bundle report.</span><br><span class="line">         * In &quot;static&quot; mode single HTML file with bundle report will be generated.</span><br><span class="line">         * In &quot;json&quot; mode single JSON file with bundle report will be generated</span><br><span class="line">         * In &quot;disabled&quot; mode you can use this plugin to just generate Webpack Stats JSON file by setting &quot;generateStatsFile&quot; to true.</span><br><span class="line">         */</span><br></pre></td></tr></table></figure>
+<p><strong><code>1.3 配置打包脚本</code></strong><br>在<code>package.json</code>的<code>scripts</code>中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ &quot;build&quot;: &quot;vue-cli-service build --report&quot;</span><br></pre></td></tr></table></figure></p>
+<p>执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm run build</span><br></pre></td></tr></table></figure></p>
+<p>打开浏览器：<a href="http://127.0.0.1:8888" target="_blank" rel="noopener">http://127.0.0.1:8888</a> 之后 就会看到一个【可视化】的文件占比</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-6dbebda468f26fd8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="20200428150718890.png"></p>
+<p>❗️扩展：终端如果报出警告: (资产大小限制244KIB,可能回影响网络性能)。<br><img src="https://upload-images.jianshu.io/upload_images/11846892-a979dcca61ef8edd.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="[图片上传中...(20200428150718890.png-e3528-1624502443756-0)]
+"></p>
+<p>🧠解决办法：在<code>vue.config.js</code>中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">    //webpack配置</span><br><span class="line">    configureWebpack: &#123;</span><br><span class="line">        //关闭 webpack 的性能提示</span><br><span class="line">        performance: &#123;</span><br><span class="line">            hints:false</span><br><span class="line">        &#125;</span><br><span class="line">        // 或者</span><br><span class="line">        //警告 webpack 的性能提示</span><br><span class="line">        performance: &#123;</span><br><span class="line">            hints:&apos;warning&apos;,</span><br><span class="line">            //入口起点的最大体积</span><br><span class="line">            maxEntrypointSize: 50000000,</span><br><span class="line">            //生成文件的最大体积</span><br><span class="line">            maxAssetSize: 30000000,</span><br><span class="line">            //只给出 js 文件的性能提示</span><br><span class="line">            assetFilter: function(assetFilename) &#123;</span><br><span class="line">                return assetFilename.endsWith(&apos;.js&apos;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    // vue.config.js</span><br><span class="line">    //     configureWebpack: config =&gt; &#123;</span><br><span class="line">    //         config.performance = &#123;</span><br><span class="line">    //            hints: &apos;warning&apos;,</span><br><span class="line">    //           maxEntrypointSize: 50000000,</span><br><span class="line">    //           maxAssetSize: 30000000,</span><br><span class="line">    //           assetFilter: function(assetFilename) &#123;</span><br><span class="line">    //              return assetFilename.endsWith(&apos;.js&apos;);</span><br><span class="line">    //          &#125;</span><br><span class="line">    //      &#125;</span><br><span class="line">    //    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>更多细节可参考：<a href="https://www.webpackjs.com/configuration/performance/" target="_blank" rel="noopener">webpack中文文档-性能(performance)</a></p>
+<h2 id="二、移除console"><a href="#二、移除console" class="headerlink" title="二、移除console"></a>二、移除console</h2><hr>
+<p>如果你使用的是 webpack v5 或以上版本，你不需要安装这个插件。<br>webpack v5 自带最新的 <code>terser-webpack-plugin</code>。<br>如果使用 webpack v4，则必须安装 <code>terser-webpack-plugin</code> v4 的版本。</p>
+<h4 id="terser-webpack-plugin-插件删除-debugger-或-console"><a href="#terser-webpack-plugin-插件删除-debugger-或-console" class="headerlink" title="terser-webpack-plugin 插件删除 debugger 或 console"></a>terser-webpack-plugin 插件删除 debugger 或 console</h4><p><strong><code>2.1 安装依赖：terser-webpack-plugin</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install terser-webpack-plugin -D</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>2.2 配置vue.config.js</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">const TerserPlugin = require(&apos;terser-webpack-plugin&apos;)</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">    chainWebpack: config =&gt; &#123;</span><br><span class="line">        if (process.env.NODE_ENV === &apos;production&apos;) &#123;</span><br><span class="line">          config.optimization.minimizer([</span><br><span class="line">            new TerserPlugin(&#123;</span><br><span class="line">              test: /\.js(\?.*)?$/i,</span><br><span class="line">              terserOptions: &#123;</span><br><span class="line">                compress: &#123;</span><br><span class="line">                  drop_console: true,</span><br><span class="line">                  pure_funcs: [&apos;console.log&apos;]</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">          ])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">          // disable optimization during tests to speed things up</span><br><span class="line">          config.optimization.minimize(false)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>更多细节可参考：<a href="https://webpack.docschina.org/plugins/terser-webpack-plugin/" target="_blank" rel="noopener">webpack中文文档-TerserWebpackPlugin</a></p>
+<p>❓❓❓如果报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: optimization.minimizer() no longer supports being passed an array. Either switch to the new syntax (https://github.com/neutrinojs/webpack-chain#config-optimization-minimizers-adding) or downgrade to webpack-chain 4. If using Vue this likely means a Vue plugin has not yet been updated to support Vue CLI 4+.</span><br></pre></td></tr></table></figure></p>
+<p>🧠可重新配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">if (process.env.NODE_ENV === &apos;production&apos;) &#123;</span><br><span class="line">            config.optimization.minimizer(&apos;js&apos;)</span><br><span class="line">                .use(require.resolve(&apos;terser-webpack-plugin&apos;), [&#123; terserOptions: &#123;</span><br><span class="line">                    // 打包删掉注释</span><br><span class="line">                    comments: true,</span><br><span class="line">                    compress: &#123;</span><br><span class="line">                        drop_console: true,</span><br><span class="line">                        drop_debugger: true</span><br><span class="line">                        // pure_funcs: [&quot;console.log&quot;]</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; &#125;])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // disable optimization during tests to speed things up</span><br><span class="line">            config.optimization.minimize(false)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="UglifyJsPlugin-插件删除-debugger-或-console"><a href="#UglifyJsPlugin-插件删除-debugger-或-console" class="headerlink" title="UglifyJsPlugin 插件删除 debugger 或 console"></a>UglifyJsPlugin 插件删除 debugger 或 console</h4><ul>
+<li>删除文件里的注释和 console，删除冗余代码，减小打包体积的目的。还可以删除 debugger，设置 cache 缓存等配置。</li>
+</ul>
+<p><strong><code>2.3 webpack 3.x 版本：通过 webpack.optimize.UglifyJsPlugin 设置</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/* webpack.config.js */</span><br><span class="line">···</span><br><span class="line">plugins: [</span><br><span class="line">  ···</span><br><span class="line">  new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">      cache: true,</span><br><span class="line">      compress: &#123;</span><br><span class="line">        warnings: false, // 是否在UglifyJS删除没有用到的代码时输出警告信息，默认为false</span><br><span class="line">        drop_debugger: true, //自动删除debugger</span><br><span class="line">        drop_console: true, //自动删除console.log</span><br><span class="line">      &#125;,</span><br><span class="line">  &#125;),</span><br><span class="line">  ···</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>2.4 webpack 4.x 版本：安装依赖uglifyjs-webpack-plugin</code></strong><br>webpack 4.x 版本移除了 webpack.optimize.UglifyJsPlugin 的使用，通过配置 optimization.minimize 与 optimization.minimizer 来自定义压缩相关的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -D uglifyjs-webpack-plugin</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/* webpack.config.js */</span><br><span class="line"></span><br><span class="line">···</span><br><span class="line">const UglifyJsPlugin = require(&apos;uglifyjs-webpack-plugin&apos;);</span><br><span class="line">module.exports = &#123;</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    minimizer: [</span><br><span class="line">      new UglifyJsPlugin(&#123;</span><br><span class="line">    		// 相关配置</span><br><span class="line">    	&#125;)</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>❗️扩展：为什么删除生产环境的console?</p>
+<blockquote>
+<p>console.log：向web开发控制台打印一条消息，常用来在开发时调试分析。有时在开发时，需要打印一些对象信息，但发布时却忘记去掉console.log语句，这可能造成内存泄露。</p>
+</blockquote>
+<p>在传递给console.log的对象是不能被垃圾回收 ♻️，因为在代码运行之后需要在开发工具能查看对象信息。所以最好不要在生产环境中console.log任何对象。<br><img src="https://upload-images.jianshu.io/upload_images/11846892-954576f740dc9d01.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="下载 (3).png"></p>
+<p>实例代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span><br><span class="line">  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;</span><br><span class="line">  &lt;title&gt;Leaker&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line"></span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;input type=&quot;button&quot; value=&quot;click&quot;&gt;</span><br><span class="line">  &lt;script&gt;</span><br><span class="line">    !function () &#123;</span><br><span class="line">      function Leaker() &#123;</span><br><span class="line">        this.init();</span><br><span class="line">      &#125;;</span><br><span class="line">      Leaker.prototype = &#123;</span><br><span class="line">        init: function () &#123;</span><br><span class="line">          this.name = &apos;*&apos;.repeat(1e5);</span><br><span class="line">          console.log(&quot;Leaking an object %o: %o&quot;, (new Date()), this); // this对象不能被回收</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;;</span><br><span class="line">      document.querySelector(&apos;input&apos;).addEventListener(&apos;click&apos;, function () &#123;</span><br><span class="line">        new Leaker();</span><br><span class="line">      &#125;, false);</span><br><span class="line">    &#125;()</span><br><span class="line">  &lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line"></span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这里结合Chrome的<code>Devtools–&gt;Performance</code>做一些分析，操作步骤如下：</p>
+<ol>
+<li>开启Performance的记录</li>
+<li>执行CG按钮，创建基准参考线</li>
+<li>多次点击【click】按钮，新建Leaker对象</li>
+<li>执行CG按钮</li>
+<li>停止记录</li>
+</ol>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-8902e2e410b52f0f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="1069473253-5a266ef78ede4_fix732 (1).png"><br>可以看出<code>【JS Heap】</code>线最后没有降回到基准参考线的位置，显然存在没有被回收的内存。如果将代码修改为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// console.log(&quot;Leaking an object %o: %o&quot;, (new Date()), this);</span><br></pre></td></tr></table></figure></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-feb9af46d8bde50f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="1879498799-5a266f18551bf_fix732.png"><br>重复上述的操作步骤，分析结果如下：</p>
+<p>从对比分析结果可知，console.log打印的对象是不会被垃圾回收器回收的。<br>因此最好不要在页面中console.log任何对象，包括warn、error等兄弟，这样可能会影响页面的整体性能，特别在生产环境中，这些细节需要特别的关注。</p>
+<h2 id="三、压缩图片"><a href="#三、压缩图片" class="headerlink" title="三、压缩图片"></a>三、压缩图片</h2><hr>
+<p><strong><code>3.1 安装依赖</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install terser-webpack-plugin -D</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>3.2 配置vue.config.js</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">config.module</span><br><span class="line">            .rule(&apos;images&apos;)</span><br><span class="line">            .test(/\.(png|jpe?g|gif|svg)(\?.*)?$/)</span><br><span class="line">            .use(&apos;image-webpack-loader&apos;)</span><br><span class="line">            .loader(&apos;image-webpack-loader&apos;)</span><br><span class="line">            .options(&#123;</span><br><span class="line">                bypassOnDebug: true,</span><br><span class="line">                disable: process.env.NODE_ENV !== &apos;production&apos;</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="四、UI库按需加载"><a href="#四、UI库按需加载" class="headerlink" title="四、UI库按需加载"></a>四、UI库按需加载</h2><hr>
+<p>对于大多数系统而言，都会使用一些一些UI组件库，例如Ant Design或者是Element UI，这些组件都是支持按需引入，我们在使用这些组件时，如果只用到了其中一部分组件，可以配置按需加载，在<code>main.js</code>中修改代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import &#123;</span><br><span class="line">    Pagination,</span><br><span class="line">    Icon,</span><br><span class="line">    Tabs,</span><br><span class="line">&#125; from &apos;ant-design-vue&apos;</span><br><span class="line">// import &apos;ant-design-vue/dist/antd.css&apos;  已经通过babel引入 这里就不全局引入了</span><br><span class="line"></span><br><span class="line">Vue.use(Pagination)</span><br><span class="line">    .use(Icon)</span><br><span class="line">    .use(Tabs)</span><br></pre></td></tr></table></figure></p>
+<p>然后修改babel.config.js，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;plugins&quot;: [</span><br><span class="line">   [&quot;import&quot;, &#123; &quot;libraryName&quot;: &quot;ant-design-vue&quot;, &quot;libraryDirectory&quot;: &quot;es&quot;, &quot;style&quot;: &quot;css&quot; &#125;], // `style: true` 会加载 less 文件</span><br><span class="line"></span><br><span class="line"> ]</span><br></pre></td></tr></table></figure></p>
+<p>这样，组件对应的js和css文件就可以实现按需加载.</p>
+<h2 id="五、路由懒加载"><a href="#五、路由懒加载" class="headerlink" title="五、路由懒加载"></a>五、路由懒加载</h2><hr>
+<p>对于一般比较大型的B端管理系统项目，基本上都会使用Vue Router来管理路由，这些项目涉及的页面都比较多，所以为了防止首屏资源过大，需要采用路由懒加载资源即Code Splitting，将每个页面的资源进行分离，这个只需在router.js里配置即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 采用箭头函数和import进行懒加载处理</span><br><span class="line">$ component: () =&gt; import(&apos;./index.vue&apos;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="六、moment优化"><a href="#六、moment优化" class="headerlink" title="六、moment优化"></a>六、moment优化</h2><hr>
+<p><strong><code>6.1 问题描述</code></strong> </p>
+<p>根据打包分析图来看，主要是locale下moment的其他语言包占用体积较大。默认是en的语言包，所以在无需其他语言的情况下，可以直接忽略掉locale下的文件不打包。</p>
+<p>忽略之前：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-1b86336fc64818ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>忽略之后：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-e42f5f204753e9d1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><strong><code>6.2 解决方案</code></strong><br>用webpack自带的IgnorePlugin插件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// vue.config.js</span><br><span class="line">var webpack = require(&apos;webpack&apos;)</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line"> // ...此处省略其他配置</span><br><span class="line">    </span><br><span class="line"> chainWebpack: config =&gt; &#123;</span><br><span class="line">     config.plugin(&apos;ignore&apos;)</span><br><span class="line">      .use(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)); //忽略/moment/locale下的所有文件</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  // ...此处省略其他配置</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>6.3 解决方案-原理</code></strong><br>在webpack编译阶段, 如果引入的文件路径匹配<code>/^\.\/locale$/</code>，则会忽略这个文件， 也就不会被打包进去。</p>
+<ul>
+<li>搜索<code>moment</code>包编译后的文件并未找到完全匹配<code>/^\.\/locale$/</code>这个正则的引入语句，只有<code>aliasedRequire(&#39;./locale/&#39; + name)</code>这条语句和<code>locale</code>相关, 却又和正则匹配不上， 倒是在moment的src源文件中有<code>import ... from &#39;./locale&#39;</code>。 但是在moment的<code>package.json</code>中main是指向编译后的文件并不是src文件，这就奇了怪了, 于是<code>debug IgnorePlugin</code>看了一下。</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-eb622a383efd5c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<ul>
+<li>图中request真是<code>./locale</code>， 眼瞎了还是webpack的问题？按照dependencies的位置1853行查看moment编译后的文件， 定位到了确实是 <code>aliasedRequire(&#39;./locale/&#39; + name)</code>， 怎么回事？</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-0c51e9c5d3e41581.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<ul>
+<li>原来webpack在编译时，遇到<code>require(&#39;./locale/&#39; + name)</code>此类表达式时，webpack 会查找目录 <code>&#39;./locale/&#39;</code> 下符合正则表达式     <code>/^.*\.$/</code>的文件。由于 name 在编译时还是未知的，webpack 会将每个文件都作为模块引入到 bundle 中， 这就是为什么引入moment之后， 编译完的文件为什么会那么大的原因。</li>
+</ul>
+<p><strong><code>6.4 添加IgnorePlugin后, 需要设置locale怎么办?</code></strong> </p>
+<ol>
+<li>在添加<code>webpack.IgnorePlugin</code>之后， 文件大小是减小了， 但是在设置<code>moment.locale(&#39;zh-cn&#39;)</code>之后， format之后的日期仍然是英文的，语言没有切换过来。</li>
+</ol>
+<p>添加之前：打包之后包含momen.js的文件大小<br><img src="https://upload-images.jianshu.io/upload_images/11846892-227cf9891d45710f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>添加之后：打包之后包含momen.js的文件大小<br><img src="https://upload-images.jianshu.io/upload_images/11846892-f2474347815fbabe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<ol start="2">
+<li>功能缺失肯定是不能接受的， 怎么办？怎么办？</li>
+<li>在moment文档上也提供了解决方案: <code>moment-locales-webpack-plugin</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev moment-locales-webpack-plugin</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// vue.config.js</span><br><span class="line">new MomentLocalesPlugin(&#123;</span><br><span class="line">  localesToKeep: [&apos;zh-cn&apos;],</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"> // const MomentLocalesPlugin = require(&apos;moment-locales-webpack-plugin&apos;)</span><br><span class="line">        // config.plugin(&apos;moment-locales-webpack-plugin&apos;).use(</span><br><span class="line">        //     new MomentLocalesPlugin(&#123;</span><br><span class="line">        //         localesToKeep: [&apos;zh-cn&apos;]</span><br><span class="line">        //     &#125;)</span><br><span class="line">        // );</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>moment默认locale是en，它必然会被打包进去, 如果需要配置其他语言，可以通过<code>localesToKeep</code>来配置， 其他没用到的语言包也就不会被打包进去了。</li>
+</ol>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-954576f740dc9d01.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="下载 (3).png"></p>
+<p><code>vue.config.js配置如下代码</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">config.plugin(&apos;moment-locales-webpack-plugin&apos;).use(</span><br><span class="line">            new MomentLocalesPlugin(&#123;</span><br><span class="line">                localesToKeep: [&apos;es-us&apos;, &apos;ru&apos;, &apos;cs&apos;, &apos;hi&apos;, &apos;uk&apos;]</span><br><span class="line">            &#125;)</span><br><span class="line">        );</span><br></pre></td></tr></table></figure></p>
+<p>可以看到打包的时候都被打包删除掉了!<br><img src="https://upload-images.jianshu.io/upload_images/11846892-f582e7cb6b75a6c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="[图片上传中...(下载 (3).png-2486c4-1624615311186-0)]
+"></p>
+<p><strong><code>6.5 moment-locales-webpack-plugin原理分析</code></strong> </p>
+<ol>
+<li>如果没有配置<code>option</code>， 用<code>IgnorePlugin</code>忽略所有语言包(en除外)</li>
+<li>如果设置<code>option</code>， 用 <code>ContextReplacementPlugin</code>插件设置<code>webpack</code>在编译阶段的查找规则，即查找指定的<code>locale</code>。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">if (localesToKeep.length &gt; 0) &#123;</span><br><span class="line">    var regExpPatterns = localesToKeep.map(function(localeName) &#123;</span><br><span class="line">        return localeName + &apos;(\\.js)?&apos;;</span><br><span class="line">    &#125;);</span><br><span class="line">    return new ContextReplacementPlugin(</span><br><span class="line">        /moment[\/\\]locale/,</span><br><span class="line">        new RegExp(&apos;(&apos; + regExpPatterns.join(&apos;|&apos;) + &apos;)$&apos;) // 配置webpack编译阶段的查找规则， 即指定语言包</span><br><span class="line">    );</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    return new IgnorePlugin(/^\.\/locale$/, /moment$/);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="七、webpack重复打包同名依赖包"><a href="#七、webpack重复打包同名依赖包" class="headerlink" title="七、webpack重复打包同名依赖包"></a>七、webpack重复打包同名依赖包</h2><hr>
+<p>最近安装了<code>webpack-bundle-analyzer</code>插件来分析打包构成，发现有一些包被重复的打包了多次，这样会让构建出来的包格外的臃肿。这主要是因为我们往往引用了很多的第三方包，而很多工具类的库也会被别的包间接的依赖，所以就导致了重复打包的现象，例如下图的bn.js。<br><img src="https://upload-images.jianshu.io/upload_images/11846892-63f9f10d9cf5e6d0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2021-06-26 上午10.55.07.png"></p>
+<p><strong><code>7.1 解决方案</code></strong><br>在<code>webpack</code>的<code>resolve</code>下面添加如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// 第一种方法</span><br><span class="line">module.exports = &#123;</span><br><span class="line">    resolve: &#123;</span><br><span class="line">        alias:&#123;</span><br><span class="line">            &apos;bn.js&apos;: path.resolve(process.cwd(), &apos;node_modules&apos;, &apos;bn.js&apos;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">// 第二种方法</span><br><span class="line">module.exports = &#123;</span><br><span class="line">    configureWebpack:&#123;</span><br><span class="line">        resolve:&#123;</span><br><span class="line">            alias:&#123;</span><br><span class="line">                &apos;bn.js&apos;: path.resolve(process.cwd(), &apos;node_modules&apos;, &apos;bn.js&apos;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// 第三种方法</span><br><span class="line">const path = require(&apos;path&apos;);//引入path模块</span><br><span class="line">function resolve(dir)&#123;</span><br><span class="line">    return path.join(__dirname,dir)//path.join(__dirname)设置绝对路径</span><br><span class="line">&#125;</span><br><span class="line">module.exports=&#123;</span><br><span class="line">    chainWebpack: config =&gt;&#123;</span><br><span class="line">        config.resolve.alias</span><br><span class="line">        .set(&quot;@&quot;, resolve(&quot;src&quot;))　</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>resolve.alias</code>的作用其实就是添加包的别名并强行指定引用统一路径，配置完的效果如下，只能看到一个bn.js了。</p>
+<p><code>优化之后</code><br><img src="https://upload-images.jianshu.io/upload_images/11846892-c4fe95c3552a5aeb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-54f5aa2861442249.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><code>优化之前</code><br><img src="https://upload-images.jianshu.io/upload_images/11846892-75fba7826c8c6a6c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-0fa9db3e53298e6c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="八、有选择的使用prefetch和preload"><a href="#八、有选择的使用prefetch和preload" class="headerlink" title="八、有选择的使用prefetch和preload"></a>八、有选择的使用prefetch和preload</h2><hr>
+<p><strong><code>prefetch</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;link rel=&quot;prefetch&quot; &gt;&lt;/link&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码告诉浏览器，这段资源将会在未来某个导航或者功能要用到，但是本资源的下载顺序权重比较低。也就是说prefetch通常用于加速下一次导航，而不是本次的。<br><strong><code>preload</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;link rel=&quot;preload&quot; &gt;&lt;/link&gt;</span><br></pre></td></tr></table></figure></p>
+<p>preload通常用于本页面要用到的关键资源，包括关键js、字体、css文件。<code>preload</code>将会把资源得下载顺序权重提高，使得关键数据提前下载好，优化页面打开速度。</p>
+<p>在使用<code>Vue Cli</code>生成的项目里，当我们配置了路由懒加载后，默认情况下<code>webpack</code>在构建时会对所有的懒加载资源进行<code>prefetch</code>和<code>preload</code>，所以当你打开首页时，会看到大量的<code>prefetch</code>和<code>preload</code>请求，如下图：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-d5797aa64fc21702.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="v2-c0eac86b7041fe0a6a04d8a4ea9c01d0_1440w.jpeg"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 禁止prefetch和preload</span><br><span class="line">chainWebpack: (config) =&gt; &#123;</span><br><span class="line">  config.plugins.delete(&apos;prefetch&apos;)</span><br><span class="line">  config.plugins.delete(&apos;preload&apos;)</span><br><span class="line">&#125;</span><br><span class="line">// 有选择的prefetch和preload</span><br><span class="line">config.plugin(&apos;prefetch&apos;).tap(options =&gt; &#123;</span><br><span class="line">    options[0].fileBlacklist = options[0].fileBlacklist || []</span><br><span class="line">    options[0].fileBlacklist.push(/myasyncRoute(.)+?\.js$/)</span><br><span class="line">    return options</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>上面代码修改<code>vue.config.js</code>的<code>chainWebpack</code>来添加配置。</p>
+<h2 id="九、提升打包速度"><a href="#九、提升打包速度" class="headerlink" title="九、提升打包速度"></a>九、提升打包速度</h2><ul>
+<li>提升编译打包时 js 压缩速度，还可设置打包时删除注释和 console 等代码，可以合并上文中的<code>UglifyJsPlugin</code></li>
+</ul>
+<h4 id="webpack-parallel-uglify-plugin-插件删除-debugger-或-console"><a href="#webpack-parallel-uglify-plugin-插件删除-debugger-或-console" class="headerlink" title="webpack-parallel-uglify-plugin 插件删除 debugger 或 console"></a>webpack-parallel-uglify-plugin 插件删除 debugger 或 console</h4><p><strong><code>9.1 安装依赖webpack-parallel-uglify-plugin</code></strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm i -D webpack-parallel-uglify-plugin</span><br></pre></td></tr></table></figure></p>
+<p><strong><code>9.2 webpack配置</code></strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/* webpack.config.js */</span><br><span class="line"></span><br><span class="line">const ParallelUglifyPlugin = require(&apos;webpack-parallel-uglify-plugin&apos;);</span><br><span class="line">plugin: [</span><br><span class="line">	···</span><br><span class="line">  new ParallelUglifyPlugin(&#123;</span><br><span class="line">    cacheDir: &apos;.cache/&apos;, // 用作缓存的可选绝对路径。如果未提供，则不使用缓存。</span><br><span class="line">    uglifyJS: &#123;</span><br><span class="line">      output: &#123;</span><br><span class="line">        comments: false, // 是否保留代码中的注释，默认为保留</span><br><span class="line">      &#125;,</span><br><span class="line">      warnings: false, // 是否在UglifyJS删除没有用到的代码时输出警告信息，默认为false</span><br><span class="line">      compress: &#123;</span><br><span class="line">        drop_console: true, // 是否删除代码中所有的console语句，默认为false</span><br><span class="line">        collapse_vars: true, // 是否内嵌虽然已经定义了，但是只用到一次的变量， 默认值false</span><br><span class="line">        reduce_vars: true, // 是否提取出现了多次但是没有定义成变量去引用的静态值，默认为false</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;),</span><br><span class="line">  ···</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h4 id="happypack-开启多进程编辑，提升-loader-解析速度"><a href="#happypack-开启多进程编辑，提升-loader-解析速度" class="headerlink" title="happypack:开启多进程编辑，提升 loader 解析速度"></a>happypack:开启多进程编辑，提升 loader 解析速度</h4><hr>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接:</p>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000012295395" target="_blank" rel="noopener">解读生产环境为何避免使用console</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/362547907" target="_blank" rel="noopener">Vue Cli项目B端系统常见性能优化技巧</a></li>
+<li><a href="https://www.jianshu.com/p/4f8f36944a46" target="_blank" rel="noopener">vue打包优化——vendor体积过大</a></li>
+<li><a href="https://juejin.cn/post/6844903987632685063" target="_blank" rel="noopener">关于moment打包的那些事</a></li>
+<li><a href="https://blog.csdn.net/u010352770/article/details/101538528" target="_blank" rel="noopener">webpack重复打包同名依赖包</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/性能优化/"># 性能优化</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/06/28/performanceOptimization-LightHouse/">Chrome 灯塔简介</a>
+            
+            
+            <a class="next" rel="next" href="/2021/06/16/JS4/">4 个你从未听说过的强大 JavaScript 运算符</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Vue 的keep-alive | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue 的keep-alive</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: April 19, 2023&nbsp;&nbsp;15:55:31
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+<h3 id="keep-alive是什么？"><a href="#keep-alive是什么？" class="headerlink" title="keep-alive是什么？"></a>keep-alive是什么？</h3><p><code>keep-alive</code> 是 Vue 中内置的一个抽象组件,用于<code>缓存动态组件</code>或者<code>路由</code>,本身不会被渲染,在组件切换时，缓存其包裹的组件的状态，使其不被销毁，防止多次渲染.</p>
+<h3 id="keep-alive的应用场景"><a href="#keep-alive的应用场景" class="headerlink" title="keep-alive的应用场景"></a>keep-alive的应用场景</h3><p>用户在某个列表页面选择筛选条件过滤出一份数据列表，由列表页面进入数据详情页面，再返回该列表页面，我们希望：列表页面可以保留用户的筛选（或选中）状态。</p>
+<h3 id="keep-alive的原理"><a href="#keep-alive的原理" class="headerlink" title="keep-alive的原理"></a>keep-alive的原理</h3><p><code>keep-alive</code> 是 Vue 中内置的一个抽象组件,用于缓存动态组件或者路由,本身不会被渲染。</p>
+<p><strong>其原理如下：</strong><br>1、<code>keep-alive</code>本身不会渲染出来，也不会出现在父组件链中,<code>keep-alive</code>包裹动态组件或路由。<br>1、当<code>动态组件</code>或<code>路由</code>首次渲染时,<code>keep-alive</code>会将其VNode缓存起来,并将其从<code>虚拟 DOM 树</code>中移除。<br>2、如果<code>动态组件</code>或<code>路由</code>被缓存,再次渲染时就不会重新创建和挂载VNode,只需直接从缓存中取出VNode,并将其挂载到对应的位置上即可。<br>3、当缓存中的<code>动态组件</code>或<code>路由</code>被离开时,<code>keep-alive</code>不会销毁实例,而是将其保存到缓存中。如果缓存中的实例数超过<code>max</code>值,会触发<code>LRU</code>淘汰策略,将最近未使用的实例销毁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const key = componentOptions.Ctor.cid + (componentOptions.tag ? `::$&#123;componentOptions.tag&#125;` : &apos;&apos;)</span><br><span class="line"></span><br><span class="line">// componentOptions.Ctor.cid 表示当前组件的唯一标识符</span><br><span class="line"></span><br><span class="line">// componentOptions.Ctor.cid 表示的是组件构造函数的唯一标识符，这个值在组件创建时就已经生成。这个值是通过 Vue 内部的组件注册机制给每个组件分配的，在组件定义时生成。在组件渲染时，Vue 会通过这个值来判断当前组件是否已经存在、是否需要重新渲染等。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// componentOptions.tag 则表示当前组件使用的 HTML 标签名或组件名称。</span><br></pre></td></tr></table></figure>
+<h3 id="首次渲染动态组件或路由时-为什么将其从DOM中移除？"><a href="#首次渲染动态组件或路由时-为什么将其从DOM中移除？" class="headerlink" title="首次渲染动态组件或路由时,为什么将其从DOM中移除？"></a>首次渲染动态组件或路由时,为什么将其从DOM中移除？</h3><p><strong>操作步骤如下：</strong></p>
+<p>1、<code>keep-alive</code>监听动态组件或路由的<code>activated</code>和<code>deactivated</code>生命周期钩子函数。<br>2、当动态组件或路由被激活时,也就是进入缓存阶段时,<code>activated</code>钩子函数会被调用,这是<code>keep-alive</code>会将当前的实例的<code>VNode</code>存储起来,并将其从父组件的<code>虚拟DOM树</code>中移除该节点,并不会销毁其实例。<br>3、当缓存中的组件或路由被激活时,<code>activated</code>钩子函数会被调用,<code>keep-alive</code>会从缓存中将当前的实例的<code>VNode</code>取出,并将其渲染载对应的位置上。</p>
+<p>通过缓存和移除动态组件或者路由实例,keep-alive 可以<code>减少组件的初始加载时间</code>和<code>页面的加载时间</code>,提高用户体验。</p>
+<p><strong>为什么将其从DOM中移除？</strong><br><code>keep-alive</code> 将动态组件或者路由从 DOM 中移除的原因是为了减少不必要的渲染,从而提高页面渲染的性能和流畅度。</p>
+<p>在 Vue 中,只要一个组件被渲染,就会生成一棵组件树。每个组件都会对应一颗虚拟 DOM 树,在组件树中包含了该组件的子组件以及所有状态的数据。当组件的状态改变时,组件树会重新构建,所有的组件和子组件都会被重新渲染。</p>
+<ul>
+<li>不移除: 那么在组件状态发生变化时,VNode会被重新渲染.</li>
+<li>移除: 只需要重新渲染组件树的一部分,这样就可以降低不必要的渲染,提高性能和流畅度.</li>
+</ul>
+<h3 id="keep-alive的属性"><a href="#keep-alive的属性" class="headerlink" title="keep-alive的属性"></a>keep-alive的属性</h3><ul>
+<li><p><code>include</code>: 用于指定哪些组件或路由需要缓存。其值为一个字符串或正则表达式,表示匹配到的组件或路由都将被缓存.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ :include=&quot;&apos;component1|component2&apos;&quot;</span><br><span class="line">$ :include=&quot;/comp.*/&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>exclude</code>: 用于指定哪些组件或路由不缓存。使用方法与<code>include</code>相同。</p>
+</li>
+<li><code>max</code>: 用于指定最大缓存数。其值为一个数字类型,表示同一时间最多可以缓存的组件/路由实例数,超过最大值,采用LRU淘汰策略,删除实例。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ :max=&quot;10&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="keep-alive嵌套路由和动态组件的使用方法"><a href="#keep-alive嵌套路由和动态组件的使用方法" class="headerlink" title="keep-alive嵌套路由和动态组件的使用方法"></a>keep-alive嵌套路由和动态组件的使用方法</h3><p>Vue3中<code>keep-alive</code>结合<code>vue-router</code>时变化较大,之前是<code>keep-alive</code>包裹<code>router-view</code>,现在需要反过来用<code>router-view</code>包裹<code>keep-alive</code>。</p>
+<p><strong>路由</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// Vue3.x</span><br><span class="line">&lt;router-view v-slot=&quot;&#123; Component &#125;&quot;&gt;</span><br><span class="line">  &lt;keep-alive&gt;</span><br><span class="line">    &lt;component :is=&quot;Component&quot;&gt;&lt;/component&gt;</span><br><span class="line">  &lt;/keep-alive&gt;</span><br><span class="line">&lt;/router-view&gt;</span><br><span class="line">// Vue2.x</span><br><span class="line">&lt;keep-alive :include=&quot;allowList&quot; :exclude=&quot;noAllowList&quot; :max=&quot;amount&quot;&gt;</span><br><span class="line">    &lt;router-view&gt;&lt;/router-view&gt;</span><br><span class="line">&lt;/keep-alive&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>动态组件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;keep-alive :include=&quot;allowList&quot; :exclude=&quot;noAllowList&quot; :max=&quot;amount&quot;&gt; </span><br><span class="line">    &lt;component :is=&quot;currentComponent&quot;&gt;&lt;/component&gt; </span><br><span class="line">&lt;/keep-alive&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="keep-alive缓存后如果要获取数据的方式"><a href="#keep-alive缓存后如果要获取数据的方式" class="headerlink" title="keep-alive缓存后如果要获取数据的方式"></a>keep-alive缓存后如果要获取数据的方式</h3><p><strong>beforeRouteEnter</strong></p>
+<p>在有vue-router的项目,每次进入路由的时候,都会执行<code>beforeRouteEnter</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">beforeRouteEnter(to, from, next)&#123;</span><br><span class="line">  next(vm=&gt;&#123;</span><br><span class="line">    console.log(vm)</span><br><span class="line">    // 每次进入路由执行</span><br><span class="line">    vm.getData()  // 获取数据</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>actived</strong><br>在keep-alive缓存的组件被激活的时候,都会执行actived钩子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">activated()&#123;</span><br><span class="line">   this.getData() // 获取数据</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="keep-alive怎么缓存组件的-缓存后又是怎么更新的？"><a href="#keep-alive怎么缓存组件的-缓存后又是怎么更新的？" class="headerlink" title="keep-alive怎么缓存组件的,缓存后又是怎么更新的？"></a>keep-alive怎么缓存组件的,缓存后又是怎么更新的？</h3><p>1、结合属性<code>include</code>和<code>exclude</code>可以明确指定缓存哪些组件或排除缓存指定组件。<br>2、<code>keep-alive</code>是一个通用组件,它的内部定义了一个map,缓存创建过的组件实例,它返回的渲染函数内部会查找内嵌的<code>component</code>组件对应组件的   <code>VNode</code>,如果该组件在map中找到它就会直接返回,由于<code>component</code>的<code>is属性</code>是个响应式数据,因此只要它变化,<code>keep-alive</code>内部的render函数就会重新执行。</p>
+<h3 id="keep-alive包裹的组件是如何使用缓存的"><a href="#keep-alive包裹的组件是如何使用缓存的" class="headerlink" title="keep-alive包裹的组件是如何使用缓存的"></a>keep-alive包裹的组件是如何使用缓存的</h3><ol>
+<li>在<code>首次</code>加载被包裹组件时,在keep-alive.js中的render函数可知,VNode.componentInstance的值是undfined,keepAlive的值是true,因为keep-alive组件作为父组件,它的render函数会先于被包裹组件执行；由于abstaract为true那么后面的逻辑不执行；</li>
+<li><code>再次</code>访问被包裹组件时,VNode.componentInstance的值就是已经缓存的组件实例,那么会执行insert(parentElm, VNode.elm, refElm)逻辑,这样就直接把上一次的DOM插入到父元素中.</li>
+</ol>
+<h3 id="keep-alive的生命周期？"><a href="#keep-alive的生命周期？" class="headerlink" title="keep-alive的生命周期？"></a>keep-alive的生命周期？</h3><p><strong>activated激活</strong><br><code>activated</code>: 页面进入的时候会触发</p>
+<p>页面第一次进入的时候，钩子函数触发的顺序是: <code>created-&gt;mounted-&gt;activated</code><br>当再次前进或者后退的时候只触发:<code>activated</code></p>
+<p><strong>deactivated离开</strong></p>
+<p><code>deactivated</code>: 页面退出的时候会触发</p>
+<h3 id="keep-alive的原理-amp-源码解析"><a href="#keep-alive的原理-amp-源码解析" class="headerlink" title="keep-alive的原理&amp;源码解析"></a>keep-alive的原理&amp;源码解析</h3><p><strong>keep-alive在生命周期钩子函数中操作</strong></p>
+<ul>
+<li><code>created:</code> 初始化一个<code>cache</code>、<code>keys</code>，<code>cache</code>用来存缓存组件的虚拟DOM集合，<code>keys</code>用来存缓存组件的key集合.</li>
+<li><code>mounted:</code>实时监听<code>include</code>、<code>exclude</code>这两个的变化，并执行相应操作.</li>
+<li><code>destroyed:</code> 删除掉所有缓存相关的东西.</li>
+</ul>
+<p><strong>源码解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">// src/core/components/keep-alive.js</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  name: &apos;keep-alive&apos;,</span><br><span class="line">  abstract: true, // 判断此组件是否需要在渲染成真实DOM</span><br><span class="line">  props: &#123;</span><br><span class="line">    include: patternTypes,</span><br><span class="line">    exclude: patternTypes,</span><br><span class="line">    max: [String, Number]</span><br><span class="line">  &#125;,</span><br><span class="line">  created() &#123;</span><br><span class="line">    this.cache = Object.create(null) // 创建对象来存储  缓存虚拟dom</span><br><span class="line">    this.keys = [] // 创建数组来存储  缓存key</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted() &#123;</span><br><span class="line">    // 实时监听include、exclude的变动</span><br><span class="line">    this.$watch(&apos;include&apos;, val =&gt; &#123;</span><br><span class="line">      pruneCache(this, name =&gt; matches(val, name))</span><br><span class="line">    &#125;)</span><br><span class="line">    this.$watch(&apos;exclude&apos;, val =&gt; &#123;</span><br><span class="line">      pruneCache(this, name =&gt; !matches(val, name))</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  destroyed() &#123;</span><br><span class="line">    for (const key in this.cache) &#123; // 删除所有的缓存</span><br><span class="line">      pruneCacheEntry(this.cache, key, this.keys)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  render() &#123;</span><br><span class="line">      // 下面讲</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>pruneCacheEntry函数</strong><br>1、遍历集合，执行所有缓存组件的$destroy方法<br>2、将cache对应key的内容设置为null<br>3、删除keys中对应的元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function pruneCacheEntry (</span><br><span class="line">  cache: VNodeCache,</span><br><span class="line">  key: string,</span><br><span class="line">  keys: Array&lt;string&gt;,</span><br><span class="line">  current?: VNode</span><br><span class="line">) &#123;</span><br><span class="line">  const cached = cache[key]</span><br><span class="line">  if (cached &amp;&amp; (!current || cached.tag !== current.tag)) &#123;</span><br><span class="line">    cached.componentInstance.$destroy() // 执行组件的destory钩子函数</span><br><span class="line">  &#125;</span><br><span class="line">  cache[key] = null  // 设为null</span><br><span class="line">  remove(keys, key) // 删除对应的元素</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>render函数</strong></p>
+<p>1、获取到keep-alive包裹的第一个组件以及它的组件名称<br>2、判断此组件名称是否能被白名单、黑名单匹配，如果不能被白名单匹配 || 能被黑名单匹配，则直接返回<code>VNode</code>，不往下执行，如果不符合，则往下执行第三步<br>3、根据组件ID、tag生成缓存key，并在缓存集合中查找是否已缓存过此组件。如果已缓存过，直接取出缓存组件，并更新缓存key在keys中的位置（这是LRU算法的关键），如果没缓存过，则继续第四步<br>4、分别在cache、keys中保存此组件以及他的缓存key，并检查数量是否超过max，超过则根据LRU算法进行删除。<br>5、将此组件实例的keepAlive属性<code>abstract</code>设置为true.</p>
+<p><strong>keep-alive本身渲染</strong></p>
+<p>Vue在初始化生命周期的时候，为组件实例建立父子关系会根据<code>abstract</code>属性决定是否忽略某个组件。在<code>keep-alive</code>中，设置了<code>abstract:true</code>，那Vue就会跳过该组件实例.<br>最后构建的组件树中就不会包含<code>keep-alive</code>组件，那么由组件树渲染成的DOM树自然也不会有<code>keep-alive</code>相关的节点了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// src/core/instance/lifecycle.js</span><br><span class="line"></span><br><span class="line">export function initLifecycle (vm: Component) &#123;</span><br><span class="line">  const options = vm.$options</span><br><span class="line">  // 找到第一个非abstract的父组件实例</span><br><span class="line">  let parent = options.parent</span><br><span class="line">  if (parent &amp;&amp; !options.abstract) &#123;</span><br><span class="line">    while (parent.$options.abstract &amp;&amp; parent.$parent) &#123;</span><br><span class="line">      parent = parent.$parent</span><br><span class="line">    &#125;</span><br><span class="line">    parent.$children.push(vm)</span><br><span class="line">  &#125;</span><br><span class="line">  vm.$parent = parent</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接:</p>
+<ul>
+<li><a href="https://juejin.cn/post/7165675789885636616" target="_blank" rel="noopener">靓仔，说一下keep-alive缓存组件后怎么更新及原理？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/368238830" target="_blank" rel="noopener">keep-alive实现原理</a></li>
+<li><a href="https://ustbhuangyi.github.io/vue-analysis/v2/extend/keep-alive.html#%E5%86%85%E7%BD%AE%E7%BB%84%E4%BB%B6" target="_blank" rel="noopener">keep-alive</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js/"># Vue.js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/04/20/vue23/">Vue 的双向绑定原理</a>
+            
+            
+            <a class="next" rel="next" href="/2023/04/19/vue21/">Vue 的生命周期的理解</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

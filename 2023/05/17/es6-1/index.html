@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>说说JavaScript中的数据类型？存储上的差别？ | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">说说JavaScript中的数据类型？存储上的差别？</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: May 17, 2023&nbsp;&nbsp;10:48:31
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在JavaScript中，可以分成两种类型：</p>
+<ul>
+<li>基本类型</li>
+<li>引用类型</li>
+</ul>
+<p>两种类型的区别： 存储位置不同</p>
+<h2 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h2><ul>
+<li>String</li>
+<li>Number</li>
+<li>Boolean</li>
+<li>Undefined</li>
+<li>null</li>
+<li>symbol</li>
+</ul>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>字符串可以使用双引号（”）、单引号（’）或反引号（`）标示<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let firstName = &quot;John&quot;;</span><br><span class="line">let lastName = &apos;Jacob&apos;;</span><br><span class="line">let lastName = `Jingleheimerschmidt`</span><br></pre></td></tr></table></figure></p>
+<p>字符串是不可变的，意思是一旦创建，它们的值就不能变了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let lang = &quot;Java&quot;;</span><br><span class="line">lang = lang + &quot;Script&quot;;  // 先销毁再创建</span><br></pre></td></tr></table></figure></p>
+<h3 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h3><p>数值最常见的<code>整数类型</code>格式则为十进制，还可以设置八进制（零开头）、十六进制（0x开头）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let intNum = 55 // 10进制的55</span><br><span class="line">let num1 = 070 // 8进制的56</span><br><span class="line">let hexNum1 = 0xA //16进制的10</span><br></pre></td></tr></table></figure>
+<p><code>浮点类型</code>则在数值汇总必须包含小数点，还可通过科学计数法表示<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let floatNum1 = 1.1;</span><br><span class="line">let floatNum2 = 0.1;</span><br><span class="line">let floatNum3 = .1; // 有效，但不推荐</span><br><span class="line">let floatNum = 3.125e7; // 等于 31250000</span><br></pre></td></tr></table></figure></p>
+<p>在数值类型中，存在一个特殊数值<code>NaN</code>，意为“不是数值”，用于表示本来要返回数值的操作失败了（而不是抛出错误）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(0/0); // NaN</span><br><span class="line">console.log(-0/+0); // NaN</span><br></pre></td></tr></table></figure></p>
+<h3 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h3><p>Boolean（布尔值）类型有两个字面值： true 和false<br>通过Boolean可以将其他类型的数据转化成布尔值</p>
+<p>规则如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">数据类型      				转换为 true 的值      				转换为 false 的值</span><br><span class="line"> String        				 非空字符串          					&quot;&quot; </span><br><span class="line"> Number 				非零数值（包括无穷值）						0 、 NaN </span><br><span class="line"> Object 					 任意对象 							   null</span><br><span class="line">Undefined 					N/A （不存在） 						undefined</span><br></pre></td></tr></table></figure>
+<h3 id="Undefined"><a href="#Undefined" class="headerlink" title="Undefined"></a>Undefined</h3><p>Undefined 类型只有一个值，就是特殊值 undefined。当使用 var或 let声明了变量但没有初始化时，就相当于给变量赋予了 undefined值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let message;</span><br><span class="line">console.log(message == undefined); // true</span><br></pre></td></tr></table></figure></p>
+<p>包含undefined 值的变量跟未定义变量是有区别的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let message; // 这个变量被声明了，只是值为 undefined</span><br><span class="line"></span><br><span class="line">console.log(message); // &quot;undefined&quot;</span><br><span class="line">console.log(age); // 没有声明过这个变量，报错</span><br></pre></td></tr></table></figure></p>
+<h3 id="Null"><a href="#Null" class="headerlink" title="Null"></a>Null</h3><p>Null类型同样只有一个值，即特殊值 null</p>
+<p>逻辑上讲， null 值表示一个空对象指针，这也是给typeof传一个 null 会返回 “object” 的原因<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let car = null;</span><br><span class="line">console.log(typeof car); // &quot;object&quot;</span><br></pre></td></tr></table></figure></p>
+<p>undefined 值是由 null值派生而来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">console.log(null == undefined); // true</span><br></pre></td></tr></table></figure></p>
+<p>只要变量要保存对象，而当时又没有那个对象可保存，就可用 null来填充该变量</p>
+<h3 id="Symbol"><a href="#Symbol" class="headerlink" title="Symbol"></a>Symbol</h3><p>Symbol （符号）是原始值，且符号实例是唯一、不可变的。符号的用途是确保对象属性使用唯一标识符，不会发生属性冲突的危险</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let genericSymbol = Symbol();</span><br><span class="line">let otherGenericSymbol = Symbol();</span><br><span class="line">console.log(genericSymbol == otherGenericSymbol); // false</span><br><span class="line"></span><br><span class="line">let fooSymbol = Symbol(&apos;foo&apos;);</span><br><span class="line">let otherFooSymbol = Symbol(&apos;foo&apos;);</span><br><span class="line">console.log(fooSymbol == otherFooSymbol); // false</span><br></pre></td></tr></table></figure>
+<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><ul>
+<li>Object</li>
+<li>Array</li>
+<li>Function</li>
+</ul>
+<h3 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h3><p>创建object常用方式为对象字面量表示法，属性名可以是字符串或数值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let person = &#123;</span><br><span class="line">    name: &quot;Nicholas&quot;,</span><br><span class="line">    &quot;age&quot;: 29,</span><br><span class="line">    5: true</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h3><p>JavaScript数组是一组有序的数据，但跟其他语言不同的是，数组中每个槽位可以存储任意类型的数据。并且，数组也是动态大小的，会随着数据添加而自动增长<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let colors = [&quot;red&quot;, 2, &#123;age: 20 &#125;]</span><br><span class="line">colors.push(2)</span><br></pre></td></tr></table></figure></p>
+<h3 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h3><p>函数实际上是对象，每个函数都是 Function类型的实例，而 Function也有属性和方法，跟其他引用类型一样</p>
+<p>函数存在三种常见的表达方式：</p>
+<ul>
+<li>函数声明</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 函数声明</span><br><span class="line">function sum (num1, num2) &#123;</span><br><span class="line">    return num1 + num2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>函数表达式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let sum = function(num1, num2) &#123;</span><br><span class="line">    return num1 + num2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>箭头函数<br>函数声明和函数表达式两种方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let sum = (num1, num2) =&gt; &#123;</span><br><span class="line">    return num1 + num2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="其他引用类型"><a href="#其他引用类型" class="headerlink" title="其他引用类型"></a>其他引用类型</h2><ul>
+<li>Date</li>
+<li>RegExp</li>
+<li>Map</li>
+<li>Set<h3 id="Date"><a href="#Date" class="headerlink" title="Date"></a>Date</h3></li>
+</ul>
+<p>Date 类型保存的是自 1970 年1 月 1 日午夜至今所经过的毫秒数，可以精确表示 1970 年 1 月1 日之后 285616 年的日期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let now = new Date();</span><br></pre></td></tr></table></figure>
+<p><strong>格式化日期</strong></p>
+<ul>
+<li><code>toDateString()</code>显示日期中的周几、月、日、年（格式特定于实现）</li>
+<li><code>toTimeString()</code>显示日期中的时、分、秒和时区（格式特定于实现）</li>
+<li><code>toLocaleDateString()</code>显示日期中的周几、月、日、年（格式特定于实现和地区）</li>
+<li><code>toLocaleTimeString()</code>显示日期中的时、分、秒（格式特定于实现和地区）</li>
+<li><code>toUTCString()</code>显示完整的UTC日期（格式特定于实现）</li>
+</ul>
+<p>这些方法的输出与<code>toLocaleString()</code>和<code>toString()</code>一样，会因浏览器而异。因此不能用于在用户界面上一致地显示日期。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let date = new Date() // Wed May 17 2023 14:10:19 GMT+0800 (中国标准时间)</span><br><span class="line">console.log(date.toDateString()) //&apos;Wed May 17 2023&apos;</span><br><span class="line">console.log(date.toTimeString())// &apos;14:10:19 GMT+0800 (中国标准时间)&apos;</span><br><span class="line">console.log(date.toLocaleDateString()) //&apos;2023/5/17&apos;</span><br><span class="line">console.log(date.toLocaleTimeString()) //&apos;14:10:19&apos;</span><br><span class="line">console.log(date.toUTCString()) //&apos;Wed, 17 May 2023 06:10:19 GMT&apos;</span><br></pre></td></tr></table></figure></p>
+<p><strong>Date.now()</strong></p>
+<p>Date.now()方法，返回执行时的日期时间毫秒数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 起始时间</span><br><span class="line">let start = Date.now();</span><br><span class="line"></span><br><span class="line">// 调用函数</span><br><span class="line">doSomething();</span><br><span class="line"></span><br><span class="line">// 结束时间</span><br><span class="line">let stop = Date.now()；</span><br><span class="line"></span><br><span class="line">result = stop - start;</span><br></pre></td></tr></table></figure>
+<p><strong>Date.parse()</strong></p>
+<p><code>Date.parse()</code>支持以下日期格式：</p>
+<ul>
+<li>月/日/年，例如：5/20/2020</li>
+<li>月名 日，年，例如：May 20 2020</li>
+<li>周几 月名 日 年 时:分:秒 时区，如Tue May 20 202000:00:00 GMT-0700</li>
+<li>ISO 8601扩展格式 YYYY-MM-DDTHH:mm:ss.sssZ，如2020-05-20T00:00:00（只适用于兼容ES5的实现）</li>
+</ul>
+<p>如果把以上标识日期的字符串直接传给 Date 函数，省略了Date.parse()，那么 Date 会在后台默认调用，也就是说，可以省略Date.parse()方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let loveDate = new Date(Date.parse(&quot;May 20, 2020&quot;));</span><br><span class="line">// or</span><br><span class="line">let loveDate = new Date(&quot;May 20, 2020&quot;);</span><br></pre></td></tr></table></figure>
+<p><strong>Date.UTC()</strong></p>
+<p>Date.UTC()接受的参数格式是：年、零起点月数（1月是0，2月是1，以此类推）、日（1-31）、时（0-23）、分、秒和毫秒。这些参数中，只有前两个（年和月）是必需的。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// GMT时间2000年1月1日零点</span><br><span class="line">let y2k = new Date(Date.UTC(2000, 0));</span><br><span class="line"></span><br><span class="line">// GMT时间2005年5月5日下午5点55分55秒</span><br><span class="line">let allFives = new Date(Date.UTC(2005, 4, 5, 17, 55, 55));</span><br></pre></td></tr></table></figure>
+<p>与Date.parse()一样，Date.UTC()也会被 Date 构造函数隐式调用，但有一个区别：这种情况下创建的是本地日期，不是 GMT 日期。</p>
+<h3 id="RegExp"><a href="#RegExp" class="headerlink" title="RegExp"></a>RegExp</h3><p>可参考：<a href="https://youle.zhipin.com/articles/1f2eb19c13828defqxBy2d-5.html" target="_blank" rel="noopener">https://youle.zhipin.com/articles/1f2eb19c13828defqxBy2d-5.html</a></p>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><p>Map 对象保存键值对。任何值(对象或者原始值) 都可以作为一个键或一个值</p>
+<p><strong>构造函数</strong></p>
+<ul>
+<li><p>语法:new Map([iterable])</p>
+</li>
+<li><p>参数：  iterable  可以是一个数组或者其他 iterable 对象，其元素或为键值对，或为两个元素的数组；每个键值对都会添加到新的 Map，null 会被当做 undefined</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let arr = [1,2,3];</span><br><span class="line">   let myMap = new Map(arr.entries());</span><br><span class="line">   console.log(myMap.get(0)); // 1</span><br></pre></td></tr></table></figure>
+<p><strong>Map实例方法</strong></p>
+<ul>
+<li><code>.set(）</code>:myMap.set(key, value)</li>
+<li><code>.get(）</code>:myMap.get(key)</li>
+<li><code>.has()</code>:myMap.has(key)</li>
+<li><code>.delete()</code>:myMap.delete(key)</li>
+<li><code>.clear()</code>:myMap.clear()方法会移除Map对象中的所有元素</li>
+<li><code>.entries()</code>:myMap.entries()返回一个新的包含[key, value]对的Iterator对象，返回的迭代器的迭代顺序与Map对象的插入顺序相同</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">let myMap = new Map();</span><br><span class="line">    myMap.set(&quot;0&quot;, &quot;foo&quot;);</span><br><span class="line">    myMap.set(1, &quot;bar&quot;);</span><br><span class="line">    myMap.set(&#123;&#125;, &quot;baz&quot;);</span><br><span class="line"></span><br><span class="line">    let mapIter = myMap.entries();</span><br><span class="line">    console.log(mapIter.next().value); // [&quot;0&quot;, &quot;foo&quot;]</span><br><span class="line">    console.log(mapIter.next().value); // [1, &quot;bar&quot;]</span><br><span class="line">    console.log(mapIter.next().value); // [Object, &quot;baz&quot;]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>.keys()</code>:myMap.keys()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">let myMap = new Map();</span><br><span class="line">   myMap.set(&quot;0&quot;, &quot;foo&quot;);</span><br><span class="line">   myMap.set(1, &quot;bar&quot;);</span><br><span class="line">   myMap.set(&#123;&#125;, &quot;baz&quot;);</span><br><span class="line"></span><br><span class="line">   let mapIter = myMap.keys();</span><br><span class="line">   console.log(mapIter.next().value); // &quot;0&quot;</span><br><span class="line">   console.log(mapIter.next().value); // 1</span><br><span class="line">   console.log(mapIter.next().value); // Object</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>.values()</code>:myMap.values()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">let myMap = new Map();</span><br><span class="line">myMap.set(&quot;0&quot;, &quot;foo&quot;);</span><br><span class="line">myMap.set(1, &quot;bar&quot;);</span><br><span class="line">myMap.set(&#123;&#125;, &quot;baz&quot;);</span><br><span class="line"></span><br><span class="line">let mapIter = myMap.values();</span><br><span class="line">console.log(mapIter.next().value); // &quot;foo&quot;</span><br><span class="line">console.log(mapIter.next().value); // &quot;bar&quot;</span><br><span class="line">console.log(mapIter.next().value); // &quot;baz&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>.forEach()</code>:myMap.forEach(callback[, thisArg])</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> // callback 必要，每个元素所要执行的函数</span><br><span class="line"> // thisArg 可选，callback 执行时其 this 的值</span><br><span class="line">let myMap = new Map([[&quot;foo&quot;, 3], [&quot;bar&quot;, &#123;&#125;], [&quot;baz&quot;, undefined]]);</span><br><span class="line">    myMap.forEach((value,key,map) =&gt; &#123;</span><br><span class="line">        console.log(&quot;key =&quot;,key,&quot;,value =&quot;,value); //key = foo ,value = 3</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><p>Set 对象允许你存储<code>任何类型的唯一值</code>，无论是原始值或者是对象引用。</p>
+<p><strong>构造函数</strong></p>
+<ul>
+<li><p>语法:new Set([iterable])</p>
+</li>
+<li><p>参数：  iterable  Set接收一个可选的Iterator对象，所有元素将按照顺序不重复地添加到Set中,传递null或者undefined将返回一个空Set</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set();</span><br></pre></td></tr></table></figure>
+<p><strong>Set实例方法</strong></p>
+<ul>
+<li><code>.add(）</code>:myMap.add( value)</li>
+<li><code>.has()</code>:myMap.has(1)</li>
+<li><code>.delete()</code>:myMap.delete(1)</li>
+<li><code>.clear()</code>:myMap.clear()方法会移除Map对</li>
+<li><p><code>for...of</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set(undefined);</span><br><span class="line"></span><br><span class="line">set.add(&quot;string&quot;).add(&quot;string&quot;);</span><br><span class="line"></span><br><span class="line">for (const v of set.entries()) &#123;</span><br><span class="line">    console.log(v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// [&apos;string&apos;, &apos;string&apos;]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>forEach</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set(undefined);</span><br><span class="line"></span><br><span class="line">set.add(&quot;string&quot;).add(&quot;string&quot;);</span><br><span class="line"></span><br><span class="line">set.forEach(function(value) &#123;</span><br><span class="line">  console.log(value);</span><br><span class="line">&#125;);</span><br><span class="line">// string</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>Set使用场景</strong></p>
+<ul>
+<li><p>Set和数组相互转化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const array = [1,2];</span><br><span class="line">const set = new Set(array); // 数组转化为set</span><br><span class="line">const newArray = [...set]; // set转化为数组</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>去除字符串重复字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const s = &apos;aabbcc&apos;;</span><br><span class="line"></span><br><span class="line">const set = new Set(s);</span><br><span class="line">const newString = [...set].join(&apos;&apos;);</span><br><span class="line">console.log(newString); // abc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数组去重</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const list = [1,2,3,1,2,3];</span><br><span class="line">const set = new Set(list);</span><br><span class="line">console.log([...set]); // [1,2,3]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>并集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set([1,2,3]);</span><br><span class="line">const set2 = new Set([1,2,3,4]);</span><br><span class="line">const set3 = new Set([...set], [...set2]); // [1, 2, 3]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>交集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set([1,2,3]);</span><br><span class="line">const set2 = new Set([1,2,3,4]);</span><br><span class="line">const set3 = new Set([...set].filter(item =&gt; set2.has(item))); // [1, 2, 3]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>差集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const set = new Set([1,2,3]);</span><br><span class="line">const set2 = new Set([1,2,3,4]);</span><br><span class="line">const set3 = new Set([...set2].filter(item =&gt; !set.has(item))); // [4], 注意set2和set的顺序</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>数据类型的唯一性判定使用示例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const set = new Set(undefined);</span><br><span class="line"></span><br><span class="line">set.</span><br><span class="line">    add(&quot;string&quot;).add(&quot;string&quot;). //srting</span><br><span class="line">    add(1).add(1). // 1</span><br><span class="line">    add(true).add(true). // true</span><br><span class="line">    add(null).add(null). // null</span><br><span class="line">    add(undefined).add(undefined) // undefined</span><br><span class="line">    .add(NaN).add(NaN) // NaN</span><br><span class="line">    .add(&#123;&#125;).add(&#123;&#125;) // &#123;&#125;, &#123;&#125;</span><br><span class="line">    .add([]).add([]) // [], []</span><br><span class="line">    .add(function () &#123; &#125;).add(function () &#123; &#125;); // [Function], [Function]</span><br><span class="line"></span><br><span class="line">// 可以看到基本类型只会存储一个值，引用类型会存入多个</span><br></pre></td></tr></table></figure></p>
+<h2 id="存储区别"><a href="#存储区别" class="headerlink" title="存储区别"></a>存储区别</h2><p>基本数据类型和引用数据类型存储在内存中的位置不同：</p>
+<ul>
+<li>基本数据类型存储在<code>栈</code>中</li>
+<li>引用类型的对象存储于<code>堆</code>中</li>
+</ul>
+<p>当我们把变量赋值给一个变量时，解析器首先要确认的就是这个值是基本类型值还是引用类型值</p>
+<p>举个🌰：</p>
+<p><strong>基本类型</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let a = 10;</span><br><span class="line">let b = a; // 赋值操作</span><br><span class="line">b = 20;</span><br><span class="line">console.log(a); // 10值</span><br></pre></td></tr></table></figure>
+<p>a的值为一个基本类型，是存储在栈中，将a的值赋给b，虽然两个变量的值相等，但是两个变量保存了两个不同的内存地址</p>
+<p><img src="https://static.vue-js.com/906ffb90-6463-11eb-85f6-6fac77c0c9b3.png" alt="截屏2023-05-12 上午10.42.57.png"></p>
+<p><strong>引用类型</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var obj1 = &#123;&#125;</span><br><span class="line">var obj2 = obj1;</span><br><span class="line">obj2.name = &quot;Xxx&quot;;</span><br><span class="line">console.log(obj1.name); // xxx</span><br></pre></td></tr></table></figure>
+<p>引用类型数据存放在堆中，每个堆内存对象都有对应的引用地址指向它，引用地址存放在栈中。</p>
+<p>obj1是一个引用类型，在赋值操作过程汇总，实际是将堆内存对象在栈内存的引用地址复制了一份给了obj2，实际上他们共同指向了同一个堆内存对象，所以更改obj2会对obj1产生影响</p>
+<p><img src="https://static.vue-js.com/906ffb90-6463-11eb-85f6-6fac77c0c9b3.png" alt="截屏2023-05-12 上午10.42.57.png"></p>
+<p><strong>总结</strong></p>
+<ul>
+<li>声明变量时不同的内存地址分配：<br>简单类型的值存放在栈中，在栈中存放的是对应的值<br>引用类型对应的值存储在堆中，在栈中存放的是指向堆内存的地址</li>
+<li>不同的类型数据导致赋值变量时的不同：<br>简单类型赋值，是生成相同的值，两个对象对应不同的地址<br>复杂类型赋值，是将保存对象的内存地址赋值给另一个变量。也就是两个变量指向堆内存中同一个对象</li>
+</ul>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://vue3js.cn/interview/JavaScript/data_type.html#%E4%B8%89%E3%80%81%E5%AD%98%E5%82%A8%E5%8C%BA%E5%88%AB" target="_blank" rel="noopener">https://vue3js.cn/interview/JavaScript/data_type.html#%E4%B8%89%E3%80%81%E5%AD%98%E5%82%A8%E5%8C%BA%E5%88%AB</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/ES6/"># ES6</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/05/18/es6-2/">说说var、let、const之间的区别</a>
+            
+            
+            <a class="next" rel="next" href="/2023/05/12/css11/">谈谈对前端CSS工程化的理解</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

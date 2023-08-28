@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>leeCode-16： 最接近的三数之和 (排序 + 双指针解法)-中等 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">leeCode-16： 最接近的三数之和 (排序 + 双指针解法)-中等</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: August 2, 2023&nbsp;&nbsp;13:45:26
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+<h2 id="题目描述：-给你一个长度为-n-的整数数组-nums-和-一个目标值-target。请你从-nums-中选出三个整数，使它们的和与-target-最接近。返回这三个数的和。假定每组输入只存在恰好一个解。"><a href="#题目描述：-给你一个长度为-n-的整数数组-nums-和-一个目标值-target。请你从-nums-中选出三个整数，使它们的和与-target-最接近。返回这三个数的和。假定每组输入只存在恰好一个解。" class="headerlink" title="题目描述：  给你一个长度为 n 的整数数组 nums 和 一个目标值 target。请你从 nums 中选出三个整数，使它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在恰好一个解。"></a>题目描述：  给你一个长度为 n 的整数数组 nums 和 一个目标值 target。请你从 nums 中选出三个整数，使它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在恰好一个解。</h2><p><strong>示例1:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [-1,2,1,-4], target = 1</span><br><span class="line">输出：2</span><br><span class="line">解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。</span><br></pre></td></tr></table></figure>
+<p><strong>示例2:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [0,0,0], target = 1</span><br><span class="line">输出：0</span><br></pre></td></tr></table></figure>
+<p><code></code></p>
+<h2 id="题解方法一：排序-双指针"><a href="#题解方法一：排序-双指针" class="headerlink" title="题解方法一：排序 + 双指针"></a>题解方法一：排序 + 双指针</h2><p><strong><code>解题思路</code></strong><br>本题的难点在于如何去除重复解。</p>
+<p>设<code>s = nums[i] + nums[j] + nums[k]</code> 为了判断s与target是不是最近的数，通过变量mindiff来维护｜s-target｜最小值。</p>
+<ul>
+<li>如果 <code>s= target</code>, 则直接返回s。</li>
+<li>如果 <code>s&gt;targets</code>，那么如果 <code>s−target&lt;minDiff</code>，说明找到了一个与 target 更近的数，更新 minDiff为 s−target更新答案为 s。然后和三数之和一样，把 k 减一。</li>
+<li>如果 <code>s《targets</code>，那么如果 <code>target-s&lt;minDiff</code>，说明找到了一个与 target 更近的数，更新 minDiff为 target-s更新答案为 s。然后和三数之和一样，把 j 加一。</li>
+</ul>
+<p><strong>二次优化</strong></p>
+<ul>
+<li>设<code>s = nums[i] + nums[i+1] + nums[i+2]</code>。如果 s&gt;target，由于数组已经排序，后面无论怎么选，选出的三个数的和不会比 s 还小，所以不会找到比 s 更优的答案了。所以只要 s&gt;target，就可以直接 break 外层循环了。在 break 前判断 s 是否离 target 更近，如果更近，那么更新答案为 s。</li>
+<li>设<code>s = nums[i] + nums[n-2] + nums[n-1]</code>。如果 <code>s&lt;target</code>，由于数组已经排序，nums[i]加上后面任意两个数都不超过 s，所以下面的双指针就不需要跑了，无法找到比 s 更优的答案。但是后面还有更大的 nums[i]，可能找到一个离 target 更近的三数之和，所以还需要继续枚举，continue 外层循环。在 continue 前判断 s 是否离 target 更近，如果更近，那么更新答案为 s，更新 minDiff 为 target−s。</li>
+<li>如果 i&gt;0 且 nums[i]=nums[i−1]，那么 nums[i] 和后面数字相加的结果，必然在之前算出过，所以无需跑下面的双指针，直接 continue 外层循环。（可以放在循环开头判断。）</li>
+</ul>
+<p><strong>代码实现如下：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">var threeSumClosest = function(nums, target) &#123;</span><br><span class="line">    let n = nums.length</span><br><span class="line">    let res =  0</span><br><span class="line">    let minDiff = Number.MAX_SAFE_INTEGER;</span><br><span class="line">    nums.sort((a,b)=&gt;a-b)</span><br><span class="line">    for(let i =0; i&lt; n-2; i++)&#123;</span><br><span class="line">        const x = nums[i]</span><br><span class="line">         if (i &gt; 0 &amp;&amp; x === nums[i - 1]) &#123;</span><br><span class="line">            continue; // 优化三</span><br><span class="line">        &#125;</span><br><span class="line">        // 优化一</span><br><span class="line">        let s = x + nums[i + 1] + nums[i + 2];</span><br><span class="line">        if(s &gt; target)&#123;// 后面无论怎么选，选出的三个数的和不会比 s 还小</span><br><span class="line">            if (s - target &lt; minDiff) &#123;</span><br><span class="line">                ans = s; // 由于下面直接 break，这里无需更新 minDiff</span><br><span class="line">            &#125;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 优化二</span><br><span class="line">        s = x + nums[n - 2] + nums[n - 1];</span><br><span class="line">        if (s &lt; target) &#123; // x 加上后面任意两个数都不超过 s，所以下面的双指针就不需要跑了</span><br><span class="line">            if (target - s &lt; minDiff) &#123;</span><br><span class="line">                minDiff = target - s;</span><br><span class="line">                ans = s;</span><br><span class="line">            &#125;</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        let j = i+1, k = n-1</span><br><span class="line">        while(j &lt; k)&#123;</span><br><span class="line">            s = x + nums[j] + nums[k];</span><br><span class="line">            if (s === target) &#123;</span><br><span class="line">                return target;</span><br><span class="line">            &#125;</span><br><span class="line">            if (s &gt; target) &#123;</span><br><span class="line">                if (s - target &lt; minDiff) &#123; // s 与 target 更近</span><br><span class="line">                    minDiff = s - target;</span><br><span class="line">                    ans = s;</span><br><span class="line">                &#125;</span><br><span class="line">                k--;</span><br><span class="line">            &#125; else &#123; // s &lt; target</span><br><span class="line">                if (target - s &lt; minDiff) &#123; // s 与 target 更近</span><br><span class="line">                    minDiff = target - s;</span><br><span class="line">                    ans = s;</span><br><span class="line">                &#125;</span><br><span class="line">                j++</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    return ans</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://leetcode.cn/problems/3sum/description/" target="_blank" rel="noopener">leeCode-15： 三数之和 (两种解法)-中等</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/算法/"># 算法</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/02/algorithm-18/">algorithm-18： 四数之和 (排序+双指针解法)-中等</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/02/algorithm-17/">algorithm-17： 电话号码的字母组合 (解法)-中等</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

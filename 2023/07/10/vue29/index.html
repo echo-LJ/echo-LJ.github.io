@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Vue项目权限管理如何做？控制到按钮级别怎么做？ | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue项目权限管理如何做？控制到按钮级别怎么做？</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: July 10, 2023&nbsp;&nbsp;13:35:03
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+
+<p>综合实践题目: 页面权限和按钮权限,从这两个方便论述既可。</p>
+<h2 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h2><p>1、权限管理需求分析:页面和按钮权限。<br>2、权限管理的实现方案: 分前端方案和后端方案阐述。<br>3、说说各自的优缺点。</p>
+<h2 id="回答范例"><a href="#回答范例" class="headerlink" title="回答范例"></a>回答范例</h2><p>1、权限管理需求一般分为<code>页面权限</code>和<code>按钮权限</code>的管理。<br>2、具体实现方案分<code>前端实现</code>和<code>后端实现</code>两种:<br>    项目工程较小,需求变动小,维护工作量少,主要以前端实现为主。</p>
+<pre><code>* **前端方案:**会把所有路由信息在前端配置,通过路由守位要求用户登录,用户登录后根据用户角色过滤出路由表。
+举例:配置一个`asyncRoutes`数组,需要认证的页面在其路由的`meta`中添加一个`roles`字段,等获取用户角色之后取两者交集,若结果不为空则说明可以访问。此过滤结束,剩下的路由就是该角色用户可以访问的页面,通过`router.addRoutes(accessRoutes)`方式添加动态路由即可。
+* **后端方案:** 会把所有的路由页面存储在数据库中,用户登录的时候根据其角色查到可以访问的路由页面信息返回给前端,前端通过`addRoute`动态添加路由信息。
+* **按钮权限:**的控制通常会通过一个指令`v-permission`,将按钮要求角色通过值传给指令,在指令的`mounted`钩子中可以判断当前用户角色和按钮是否存在交集,有则保留,无则移除。
+</code></pre><p>3、纯前端方案实现简单,不需要额外权限管理页面,通过循环过滤即可,但是维护起来问题比较大,有新的页面和角色需求就需要重新修改前端代码打包部署,服务端不存在这个问题,通过专门的角色和权限管理页面,配置页面和按钮权限信息到数据库,应用每次获取到的都是最新的路由信息,可谓一劳永逸。</p>
+<p>vue-element-admin:前端路由守位时： 登录-获取用户信息-过滤路由。<br>后端返回路由的名称，对返回的路由生成动态的路由map，生成对应的组件配置对象，存在一定复杂性。</p>
+<h2 id="可能追问"><a href="#可能追问" class="headerlink" title="可能追问"></a>可能追问</h2><p>1、类似<code>Tabs</code>这类组件能不能使用<code>v-permission</code>指令实现按钮权限控制<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;el-tabs&gt;</span><br><span class="line">    &lt;el-tab-pane label=&quot;用户管理&quot; name=&quot;first&quot;&gt;&lt;/el-tab-pane&gt;</span><br><span class="line">    &lt;el-tab-pane label=&quot;用户管理&quot; name=&quot;third&quot;&gt;&lt;/el-tab-pane&gt;</span><br><span class="line">&lt;/el-tab&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>不能</strong>：v-permission原理时dom级别的删除，不是组件级别的删除，el-tab-pane可能产生一个页签等，所以可以借助<code>v-if</code>来实现。<br>2、服务端返回的路由信息如何添加到路由器中？</p>
+<p>服务端一般存储的是组件名称，前端不能识别，前端通过map映射获取路由的动态配置信息。</p>
+<hr>
+<p>总结:大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Vue-js/"># Vue.js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/07/11/vue30/">Vue数据响应式的理解</a>
+            
+            
+            <a class="next" rel="next" href="/2023/07/07/vue28/">子组件可否直接改变父组件的顺序</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>说说var、let、const之间的区别 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">说说var、let、const之间的区别</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: May 18, 2023&nbsp;&nbsp;14:00:44
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+
+
+
+<h2 id="var、let、const之间的区别区别"><a href="#var、let、const之间的区别区别" class="headerlink" title="var、let、const之间的区别区别"></a>var、let、const之间的区别区别</h2><p>var、let、const三者区别可以围绕下面五点展开：</p>
+<ul>
+<li>变量提升</li>
+<li>暂时性死区</li>
+<li>块级作用域</li>
+<li>重复声明</li>
+<li>修改声明的变量</li>
+<li>使用<h3 id="变量提升"><a href="#变量提升" class="headerlink" title="变量提升"></a>变量提升</h3></li>
+<li><p>var声明的变量存在变量提升，即变量可以在声明之前调用，值为undefined</p>
+</li>
+<li><p>let和const不存在变量提升，即它们所声明的变量一定要在声明后使用，否则报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// var</span><br><span class="line">console.log(a)  // undefined</span><br><span class="line">var a = 10</span><br><span class="line"></span><br><span class="line">// let </span><br><span class="line">console.log(b)  // Cannot access &apos;b&apos; before initialization</span><br><span class="line">let b = 10</span><br><span class="line"></span><br><span class="line">// const</span><br><span class="line">console.log(c)  // Cannot access &apos;c&apos; before initialization</span><br><span class="line">const c = 10</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="暂时性死区"><a href="#暂时性死区" class="headerlink" title="暂时性死区"></a>暂时性死区</h3><ul>
+<li><p>var不存在暂时性死区</p>
+</li>
+<li><p>let和const存在暂时性死区，只有等到声明变量的那一行代码出现，才可以获取和使用该变量</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// var</span><br><span class="line">console.log(a)  // undefined</span><br><span class="line">var a = 10</span><br><span class="line"></span><br><span class="line">// let</span><br><span class="line">console.log(b)  // Cannot access &apos;b&apos; before initialization</span><br><span class="line">let b = 10</span><br><span class="line"></span><br><span class="line">// const</span><br><span class="line">console.log(c)  // Cannot access &apos;c&apos; before initialization</span><br><span class="line">const c = 10</span><br></pre></td></tr></table></figure>
+<h3 id="块级作用域"><a href="#块级作用域" class="headerlink" title="块级作用域"></a>块级作用域</h3><p><code>块级作用域</code>（Block level scope）是指变量或函数等在代码块（花括号 {} 包裹的区域）中被定义的作用域。</p>
+<ul>
+<li><p>var不存在块级作用域</p>
+</li>
+<li><p>let和const存在块级作用域</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// var</span><br><span class="line">&#123;</span><br><span class="line">    var a = 20</span><br><span class="line">&#125;</span><br><span class="line">console.log(a)  // 20</span><br><span class="line"></span><br><span class="line">// let</span><br><span class="line">&#123;</span><br><span class="line">    let b = 20</span><br><span class="line">&#125;</span><br><span class="line">console.log(b)  // Uncaught ReferenceError: b is not defined</span><br><span class="line"></span><br><span class="line">// const</span><br><span class="line">&#123;</span><br><span class="line">    const c = 20</span><br><span class="line">&#125;</span><br><span class="line">console.log(c)  // Uncaught ReferenceError: c is not defined</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="重复声明"><a href="#重复声明" class="headerlink" title="重复声明"></a>重复声明</h3><ul>
+<li><p>var允许重复声明变量</p>
+</li>
+<li><p>let和const在同一作用域不允许重复声明变量</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// var</span><br><span class="line">var a = 10</span><br><span class="line">var a = 20 // 20</span><br><span class="line"></span><br><span class="line">// let</span><br><span class="line">let b = 10</span><br><span class="line">let b = 20 // Identifier &apos;b&apos; has already been declared</span><br><span class="line"></span><br><span class="line">// const</span><br><span class="line">const c = 10</span><br><span class="line">const c = 20 // Identifier &apos;c&apos; has already been declared</span><br></pre></td></tr></table></figure>
+<h3 id="修改声明的变量"><a href="#修改声明的变量" class="headerlink" title="修改声明的变量"></a>修改声明的变量</h3><ul>
+<li><p>var和let可以</p>
+</li>
+<li><p>const声明一个只读的常量。一旦声明，常量的值就不能改变</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// var</span><br><span class="line">var a = 10</span><br><span class="line">a = 20</span><br><span class="line">console.log(a)  // 20</span><br><span class="line"></span><br><span class="line">//let</span><br><span class="line">let b = 10</span><br><span class="line">b = 20</span><br><span class="line">console.log(b)  // 20</span><br><span class="line"></span><br><span class="line">// const</span><br><span class="line">const c = 10</span><br><span class="line">c = 20</span><br><span class="line">console.log(c) // Uncaught TypeError: Assignment to constant variable</span><br></pre></td></tr></table></figure>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>能用const的情况尽量使用const，其他情况下大多数使用let，避免使用var</p>
+<hr>
+<h2 id="细节区分"><a href="#细节区分" class="headerlink" title="细节区分"></a>细节区分</h2><h3 id="var"><a href="#var" class="headerlink" title="var"></a>var</h3><p>在<code>ES5</code>中，顶层<a href="https://echo-lj.github.io/2023/05/18/JS11/" target="_blank" rel="noopener">对象的属性和全局变量</a>是等价的，</p>
+<h4 id="用var声明的变量既是全局变量，也是顶层变量"><a href="#用var声明的变量既是全局变量，也是顶层变量" class="headerlink" title="用var声明的变量既是全局变量，也是顶层变量."></a>用var声明的变量既是全局变量，也是顶层变量.</h4><p>⚠️：顶层对象，在浏览器环境指的是<code>window对象</code>，在 Node 指的是<code>global对象</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var a = 10;</span><br><span class="line">console.log(window.a) // 10</span><br></pre></td></tr></table></figure>
+<h4 id="使用var声明的变量存在变量提升的情况"><a href="#使用var声明的变量存在变量提升的情况" class="headerlink" title="使用var声明的变量存在变量提升的情况"></a>使用var声明的变量存在变量提升的情况</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(a) // undefined</span><br><span class="line">var a = 20</span><br></pre></td></tr></table></figure>
+<p>在编译阶段，编译器会将其变成以下执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var a</span><br><span class="line">console.log(a)</span><br><span class="line">a = 20</span><br></pre></td></tr></table></figure>
+<h4 id="使用var，我们能够对一个变量进行多次声明，后面声明的变量会覆盖前面的变量声明"><a href="#使用var，我们能够对一个变量进行多次声明，后面声明的变量会覆盖前面的变量声明" class="headerlink" title="使用var，我们能够对一个变量进行多次声明，后面声明的变量会覆盖前面的变量声明"></a>使用var，我们能够对一个变量进行多次声明，后面声明的变量会覆盖前面的变量声明</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var a = 20 </span><br><span class="line">var a = 30</span><br><span class="line">console.log(a) // 30</span><br></pre></td></tr></table></figure>
+<h4 id="在函数中使用var声明变量时候，该变量是局部的"><a href="#在函数中使用var声明变量时候，该变量是局部的" class="headerlink" title="在函数中使用var声明变量时候，该变量是局部的"></a>在函数<code>中使用</code>var声明变量时候，该变量是<code>局部</code>的</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var a = 20</span><br><span class="line">function change()&#123;</span><br><span class="line">    var a = 30</span><br><span class="line">&#125;</span><br><span class="line">change()</span><br><span class="line">console.log(a) // 20</span><br></pre></td></tr></table></figure>
+<h4 id="而如果在函数内不使用var，该变量是全局的"><a href="#而如果在函数内不使用var，该变量是全局的" class="headerlink" title="而如果在函数内不使用var，该变量是全局的"></a>而如果在函数内<code>不使用</code>var，该变量是<code>全局</code>的</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var a = 20</span><br><span class="line">function change()&#123;</span><br><span class="line">   a = 30</span><br><span class="line">&#125;</span><br><span class="line">change()</span><br><span class="line">console.log(a) // 30</span><br></pre></td></tr></table></figure>
+<h3 id="let"><a href="#let" class="headerlink" title="let"></a>let</h3><p><code>let</code>是<code>ES6</code>新增的命令，用来声明变量</p>
+<h4 id="let命令所声明的变量在所在的代码块内有效"><a href="#let命令所声明的变量在所在的代码块内有效" class="headerlink" title="let命令所声明的变量在所在的代码块内有效"></a>let命令所声明的变量在<code>所在的代码块</code>内有效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    let a = 20</span><br><span class="line">&#125;</span><br><span class="line">console.log(a) // ReferenceError: a is not defined.</span><br></pre></td></tr></table></figure>
+<h4 id="不存在变量提升"><a href="#不存在变量提升" class="headerlink" title="不存在变量提升"></a>不存在变量提升</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(a) // 报错ReferenceError</span><br><span class="line">let a = 2</span><br></pre></td></tr></table></figure>
+<p>这表示在声明它之前，变量a是不存在的，这时如果用到它，就会抛出一个错误</p>
+<h4 id="暂时性死区-只要块级作用域内存在let命令，这个区域就不再受外部影响"><a href="#暂时性死区-只要块级作用域内存在let命令，这个区域就不再受外部影响" class="headerlink" title="暂时性死区-只要块级作用域内存在let命令，这个区域就不再受外部影响"></a><code>暂时性死区</code>-只要块级作用域内存在let命令，这个区域就不再受外部影响</h4><p>使用let声明变量前，该变量都不可用，也就是大家常说的“暂时性死区”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var a = 123</span><br><span class="line">if (true) &#123;</span><br><span class="line">    a = &apos;abc&apos; // ReferenceError</span><br><span class="line">    let a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="let不允许在相同作用域中重复声明"><a href="#let不允许在相同作用域中重复声明" class="headerlink" title="let不允许在相同作用域中重复声明"></a>let不允许在相同作用域中重复声明</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let a = 20</span><br><span class="line">let a = 30</span><br><span class="line">// Uncaught SyntaxError: Identifier &apos;a&apos; has already been declared</span><br></pre></td></tr></table></figure>
+<p>⚠️：相同作用域，下面这种情况是不会报错的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let a = 20</span><br><span class="line">&#123;</span><br><span class="line">    let a = 30</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="不能在函数内部重新声明参数"><a href="#不能在函数内部重新声明参数" class="headerlink" title="不能在函数内部重新声明参数"></a>不能在函数内部重新声明参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function func(arg) &#123;</span><br><span class="line">  let arg;</span><br><span class="line">&#125;</span><br><span class="line">func()</span><br><span class="line">// Uncaught SyntaxError: Identifier &apos;arg&apos; has already been declared</span><br></pre></td></tr></table></figure>
+<h3 id="const"><a href="#const" class="headerlink" title="const"></a>const</h3><h4 id="const声明一个只读的常量，一旦声明，常量的值就不能改变"><a href="#const声明一个只读的常量，一旦声明，常量的值就不能改变" class="headerlink" title="const声明一个只读的常量，一旦声明，常量的值就不能改变"></a>const声明一个只读的常量，一旦声明，常量的值就不能改变</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const a = 1</span><br><span class="line">a = 3</span><br><span class="line">// TypeError: Assignment to constant variable.</span><br></pre></td></tr></table></figure>
+<p>这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值</p>
+<h4 id="之前用var或let声明过变量，再用const声明同样会报错"><a href="#之前用var或let声明过变量，再用const声明同样会报错" class="headerlink" title="之前用var或let声明过变量，再用const声明同样会报错"></a>之前用var或let声明过变量，再用const声明同样会报错</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var a = 20</span><br><span class="line">let b = 20</span><br><span class="line">const a = 30</span><br><span class="line">const b = 30</span><br><span class="line">// 都会报错</span><br></pre></td></tr></table></figure>
+<p>const实际上保证的并不是变量的值不得改动，而是变量指向的那个<code>内存地址所保存的数据不得改动</code></p>
+<p>对于简单类型的数据，值就保存在变量指向的那个内存地址，因此等同于常量</p>
+<p>对于复杂类型的数据，变量指向的内存地址，保存的只是一个指向实际数据的指针，const只能保证这个指针是固定的，并不能确保改变量的结构不变</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const foo = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">// 为 foo 添加一个属性，可以成功</span><br><span class="line">foo.prop = 123;</span><br><span class="line">foo.prop // 123</span><br><span class="line"></span><br><span class="line">// 将 foo 指向另一个对象，就会报错</span><br><span class="line">foo = &#123;&#125;; // TypeError: &quot;foo&quot; is read-only</span><br></pre></td></tr></table></figure>
+<h4 id="其它情况，const与let一致"><a href="#其它情况，const与let一致" class="headerlink" title="其它情况，const与let一致"></a>其它情况，const与let一致</h4><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://vue3js.cn/interview/JavaScript/data_type.html#%E4%B8%89%E3%80%81%E5%AD%98%E5%82%A8%E5%8C%BA%E5%88%AB" target="_blank" rel="noopener">https://vue3js.cn/interview/JavaScript/data_type.html#%E4%B8%89%E3%80%81%E5%AD%98%E5%82%A8%E5%8C%BA%E5%88%AB</a></li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/ES6/"># ES6</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/05/18/JS11/">顶层对象和全局对象</a>
+            
+            
+            <a class="next" rel="next" href="/2023/05/17/es6-1/">说说JavaScript中的数据类型？存储上的差别？</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

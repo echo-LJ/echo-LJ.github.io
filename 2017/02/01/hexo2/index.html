@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Echo">
+
+
+
+    <meta name="description" content="blog">
+
+
+
+<title>Hexo deplay报错问题 | Echo的博客</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Echo&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Echo&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Hexo deplay报错问题</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: Echo
+                    
+
+                    
+                        <div class="post-time">
+                        Date: February 1, 2017&nbsp;&nbsp;10:00:00
+                        </div>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <meta name="referrer" content="no-referrer">
+
+<p>今天想在自己的另一个博客地址上更新一下博客，没想到<code>hexo deplay</code>没有反应，以下是解决过程：</p>
+<ul>
+<li>当部署失败(报错内容如图所示)的时候，请按照以下步骤进行：</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/11846892-380d07b43c8f919a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="通过SSH-key来上传代码"><a href="#通过SSH-key来上传代码" class="headerlink" title="通过SSH key来上传代码"></a>通过SSH key来上传代码</h2><hr>
+<h3 id="1、将SSH-key添加到github中"><a href="#1、将SSH-key添加到github中" class="headerlink" title="1、将SSH key添加到github中"></a>1、将SSH key添加到github中</h3><p>① 打开本地文件：<code>id_rsa.pub</code>（文件路径可以在上一步SSH生成成功后看到路径，比如我的是<code>c/Users/echo/.ssh/id_rsa.pub</code>），可以将这个文件在编辑器中打开，然后全选复制。</p>
+<p>② 登陆<strong><code>github</code></strong>，点击头像位置处 <code>Settings ——&gt; SSH and GPG keys ——&gt; New SSH key</code>，点击<code>新建SSH key</code>。</p>
+<p>③ 将 ① 中复制的内容粘贴在key文本框里，title可以不用填（或者自己起一个名字也可以）</p>
+<h3 id="2、测试设置是否成功："><a href="#2、测试设置是否成功：" class="headerlink" title="2、测试设置是否成功："></a>2、测试设置是否成功：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>如果出现如下情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hi username! You&apos;ve successfully authenticated, but GitHub does not </span><br><span class="line">provide shell access.</span><br></pre></td></tr></table></figure></p>
+<p>将项目中如下位置文件做出更改<br><img src="https://upload-images.jianshu.io/upload_images/11846892-9dc350788418a979.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>不要使用https，而是改为SSH，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repository: https://github.com/username/username.github.io.git</span><br></pre></td></tr></table></figure></p>
+<p>修改为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repo：git@github.com:username/username.github.io.git</span><br></pre></td></tr></table></figure></p>
+<p>一般这步基本就可以部署了！！！<br>如果部署还是失败，可以试试如下步骤（还是不行，就多试几遍。。。有点坑）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm -rf .deploy_git</span><br><span class="line">$ hexo clean </span><br><span class="line">$ hexo g</span><br><span class="line">$ hexo d</span><br></pre></td></tr></table></figure></p>
+<p>本人的问题成功解决了，希望帮到大家哈哈哈哈哈开心！</p>
+<h3 id="3、部署Hexo踩过的坑："><a href="#3、部署Hexo踩过的坑：" class="headerlink" title="3、部署Hexo踩过的坑："></a>3、部署Hexo踩过的坑：</h3><ul>
+<li><code>hexo d -g</code> 出现的问题:</li>
+</ul>
+<p>如果出现如下情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">INFO  Deploying: git</span><br><span class="line">INFO  Clearing .deploy_git folder...</span><br><span class="line">INFO  Copying files from public folder...</span><br><span class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">TypeError [ERR_INVALID_ARG_TYPE]: The &quot;mode&quot; argument must be integer. Received an instance of Object</span><br><span class="line">    at copyFile (node:fs:2049:10)</span><br><span class="line">    at tryCatcher (/Users/admin/othproject/blogs/blog/node_modules/bluebird/js/release/util.js:16:23)</span><br><span class="line">    at ret (eval at makeNodePromisifiedEval (/usr/local/lib/node_modules/hexo/node_modules/bluebird/js/release/promisify.js:184:12), &lt;anonymous&gt;:13:39)</span><br></pre></td></tr></table></figure></p>
+<p>出现这些是因为node版本太高，切换成低版本的node来安装Hexo就可以了.</p>
+<ul>
+<li><code>hexo d</code> 出现权限问题<br><img src="https://upload-images.jianshu.io/upload_images/11846892-80dbf7ebb4178183.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="err.png"></li>
+</ul>
+<p><strong>执行此步骤</strong>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm -rf .deploy_git</span><br><span class="line">$ ls -all</span><br><span class="line">// 查看是否还有.deploy_git文件</span><br><span class="line">$ hexo clean </span><br><span class="line">$ hexo g</span><br><span class="line">$ hexo d</span><br><span class="line">// 或者</span><br><span class="line">$ sudo hexo d</span><br></pre></td></tr></table></figure></p>
+<p><strong>依然报错-继续执行此步骤</strong>：<br><code>可能原因</code>：key不是在root账户生成的原因<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ sudo ssh-keygen -t rsa -C “idealife@github.com”</span><br><span class="line">// 对应路径为/var/root/.ssh</span><br><span class="line"></span><br><span class="line">$ sudo cat /var/root/.ssh/id_rsa.pub</span><br><span class="line"></span><br><span class="line">$ sudo hexo deploy</span><br></pre></td></tr></table></figure></p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><hr>
+<p>总结：大功告成✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️✌️</p>
+<p>其他的坑🉑️参考：<a href="https://zhuanlan.zhihu.com/p/136552969" target="_blank" rel="noopener">部署Hexo踩过的坑—node14.0配置hexo</a></p>
+<p><a href="http://www.nbpilot.com.cn/2017/11/30/%E8%A7%A3%E5%86%B3hexo-d%E7%9A%84%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98/" target="_blank" rel="noopener">解决hexo d的权限问题</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Hexo/"># Hexo</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2017/03/01/vue1/">基于 vue-cli 打造属于自己的 UI 库</a>
+            
+            
+            <a class="next" rel="next" href="/2017/01/01/hexo1/">基于HEXO博客框架和Github搭建个人博客简单教程</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Echo | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
